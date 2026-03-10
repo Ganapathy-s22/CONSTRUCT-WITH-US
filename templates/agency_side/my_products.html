@@ -1,0 +1,127 @@
+{% extends "agency_side/agency_dashboard.html" %}
+
+{% block content %}
+
+<style>
+/* ===== PRODUCT TAB BAR ===== */
+.product-tabs {
+  display: flex;
+  background: #ffffff;
+  border-radius: 2px;
+  overflow: hidden;
+  margin-bottom: 25px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+}
+
+.product-tab {
+  flex: 1;
+  text-align: center;
+  text-decoration: none;
+  padding: 14px 0;
+  font-weight: 700;
+  color: #0b1c2d;
+  cursor: pointer;
+  transition: 0.3s;
+  border-right: 1px solid #e6e6e6;
+}
+
+.product-tab:last-child {
+  border-right: none;
+}
+
+/* hover */
+.product-tab:hover {
+  color:white;
+  background: #0b1c2d;
+}
+
+/* active tab */
+.product-tab.active {
+  background: #ff6a00;
+  color: #0b1c2d;
+  font-weight: 500;
+}
+
+/* ===== CONTENT AREA ===== */
+.product-content {
+  background: #ffffff;
+  padding: 30px;
+  border-radius: 2px;
+  box-shadow: 0 6px 16px rgba(0,0,0,0.06);
+}
+</style>
+
+<!-- ================= PRODUCT TAB BAR ================= -->
+<div class="product-tabs">
+  <a href="{% url 'agency_all_products' %}" class="product-tab {% if active_tab == 'all' %}active{% endif %}">
+    All Products
+  </a>
+
+  <a href="{% url 'add_product' %}" class="product-tab {% if active_tab == 'add' %}active{% endif %}">
+    Add Product
+  </a>
+
+   <a href="{% url 'add_product_variation' %}"
+     class="product-tab {% if active_tab == 'variation' %}active{% endif %}">
+     Add Product Variations
+  </a>
+
+  <a href="#" class="product-tab {% if active_tab == 'edit' %}active{% endif %}">
+    Edit & Remove Product
+  </a>
+</div>
+
+
+
+
+<!-- ================= CONTENT ================= -->
+<div class="product-content" id="productContent">
+  <h3>Select All Products From the Above Tabs</h3><br><br>
+  <p>Here you can view all construction products like cement, bricks, sand, steel, stones.</p>
+</div>
+
+<script>
+function switchTab(element, section) {
+
+  // remove active from all
+  document.querySelectorAll(".product-tab").forEach(tab => {
+    tab.classList.remove("active");
+  });
+
+  // add active to clicked
+  element.classList.add("active");
+
+  // change content (temporary demo)
+  const content = document.getElementById("productContent");
+
+  if (section === "all") {
+    content.innerHTML = `
+      <h3>All Products</h3>
+      <p>List all available construction materials.</p>
+    `;
+  }
+
+  if (section === "add") {
+    content.innerHTML = `
+      <h3>Add Product</h3>
+      <p>Add new products like cement, bricks, sand, steel.</p>
+    `;
+  }
+
+  if (section === "edit") {
+    content.innerHTML = `
+      <h3>Edit Product</h3>
+      <p>Edit existing product details.</p>
+    `;
+  }
+
+  if (section === "delete") {
+    content.innerHTML = `
+      <h3>Delete Product</h3>
+      <p>Remove products from your list.</p>
+    `;
+  }
+}
+</script>
+
+{% endblock %}

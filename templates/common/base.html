@@ -1,0 +1,26 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Construct With Us</title>
+  
+  <link rel="stylesheet" href="{% static 'css/common/header.css' %}"> 
+  <link rel="stylesheet" href="{% static 'css/common/footer.css' %}">
+  
+ {% block extra_css %}{% endblock %}
+</head>
+<body>
+
+{% include 'common/header.html' %}
+
+  <main class="main-content">
+    {% block content %}
+    {% endblock %}
+  </main>
+
+{% include 'common/footer.html' %}
+
+</body>
+</html>
+
+

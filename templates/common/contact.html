@@ -1,0 +1,162 @@
+{% extends 'common/base.html' %}
+{% load static %}
+
+{% block content %}
+
+<style>
+  /* ===== CONTACT PAGE ===== */
+    body{
+        font-family: "Oswald", sans-serif;
+    }
+  .contact-wrapper {
+    padding: 70px 80px;
+    background: #f9fafb;
+  }
+
+  .contact-title {
+    text-align: center;
+    font-size: 36px;
+    color: #0b1c2d;
+    margin-bottom: 12px;
+  }
+
+  .contact-subtitle {
+    text-align: center;
+    font-size: 18px;
+    color: #555;
+    margin-bottom: 60px;
+  }
+
+  .contact-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 35px;
+  }
+
+  .contact-card {
+    background: #ffffff;
+    padding: 35px;
+    border-radius: 8px;
+    box-shadow: 0 8px 18px rgba(0,0,0,0.06);
+  }
+
+  .contact-card h3 {
+    color: #ff7a18;
+    font-size: 22px;
+    margin-bottom: 15px;
+  }
+
+  .contact-card p {
+    font-size: 16px;
+    color: #333;
+    line-height: 1.8;
+  }
+
+  .contact-info {
+    margin-top: 20px;
+    font-size: 16px;
+    color: #444;
+  }
+
+  .contact-info span {
+    display: block;
+    margin-bottom: 10px;
+  }
+
+  .note-box {
+    margin-top: 50px;
+    padding: 25px;
+    background: #0b1c2d;
+    color: #ffffff;
+    border-radius: 8px;
+  }
+
+  .note-box h4 {
+    color: #ff7a18;
+    margin-bottom: 10px;
+    font-size: 20px;
+  }
+
+  .note-box p {
+    font-size: 15px;
+    line-height: 1.7;
+  }
+
+  @media (max-width: 768px) {
+    .contact-wrapper {
+      padding: 40px 25px;
+    }
+  }
+</style>
+
+<div class="contact-wrapper">
+
+  <h1 class="contact-title">Contact Us</h1>
+  <p class="contact-subtitle">
+    Get in touch with the right people through ConstructWithUs
+  </p>
+
+  <div class="contact-grid">
+
+    <!-- ENGINEER CONTACT -->
+    <div class="contact-card">
+      <h3>👷 Engineer / Customer</h3>
+      <p>
+        Engineers can contact suppliers directly through the platform after login.
+        This ensures secure communication, verified suppliers, and trusted transactions.
+      </p>
+
+      <p>
+        Engineers can:
+        <br>✔ Send material requests
+        <br>✔ Receive quotations
+        <br>✔ Communicate with suppliers
+      </p>
+    </div>
+
+    <!-- AGENCY CONTACT -->
+    <div class="contact-card">
+      <h3>🏭 Supplier / Agency</h3>
+      <p>
+        Suppliers can respond to engineer requests only after successful login.
+        This avoids fake leads and ensures genuine business communication.
+      </p>
+
+      <p>
+        Agencies can:
+        <br>✔ Receive project enquiries
+        <br>✔ Send quotations
+        <br>✔ Communicate securely with engineers
+      </p>
+    </div>
+
+    <!-- PLATFORM CONTACT -->
+    <div class="contact-card">
+      <h3>📞 Platform Support</h3>
+      <p>
+        For technical issues or platform-related support, you can reach us using
+        the official contact details below.
+      </p>
+
+      <div class="contact-info">
+        <span>📍 Tamil Nadu, India</span>
+        <span>📞 Phone: +95 (0) 123 456 789</span>
+        <span>📧 Email: info@constructwithus.com</span>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- IMPORTANT NOTE -->
+  <div class="note-box">
+    <h4>Important Note</h4>
+    <p>
+      🔒 Contact between Engineers and Suppliers is allowed only after login.  
+      This rule is implemented to maintain platform security, prevent misuse,
+      and ensure that all communications happen between verified users only.
+    </p>
+  </div>
+
+</div>
+
+{% endblock %}

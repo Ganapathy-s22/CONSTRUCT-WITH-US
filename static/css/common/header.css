@@ -1,0 +1,168 @@
+body{
+      margin: 0;
+  padding: 0;
+}
+
+.top-bar {
+  width: 100%;
+  background-color: #0263c4;
+  color: #f9fafb;
+  font: normal 500 12px "Oswald", sans-serif;
+  font-size: 24px;
+}
+
+.top-bar .container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 40px;
+}
+
+.top-left span {
+  margin-right: 20px;
+  font-size: 20px;
+}
+
+/* ADMIN BUTTON */
+.admin-btn {
+  background: transparent;
+  border: 2px solid #ffffff;
+  color: #ffffff;
+  padding: 6px 14px;
+  border-radius: 4px;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+.admin-btn:hover {
+  background: #ffffff;
+  color: #0263c4;
+}
+
+/* ===== MAIN HEADER ===== */
+.main-header {
+  background: linear-gradient(90deg, #0f2e4d, #102a44);
+  padding: 18px 0;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.nav-flex {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 40px;
+}
+
+/* LOGO */
+.logo {
+  font-size: 24px;
+  font-weight: bold;
+  color: #ffffff;
+}
+
+/* NAV LINKS */
+.nav-links a {
+  color: #ef7d2c;
+  text-decoration: none;
+  
+  margin: 0 14px;
+  font-size: 16px;
+  margin-right: 2cm;
+}
+
+.nav-links a:hover {
+  color: #f7f7f7;
+}
+
+/* CTA BUTTON */
+.btn {
+  background-color: #f86903;
+  color: #ffffff;
+  padding: 10px 18px;
+  border-radius: 4px;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.btn:hover {
+  background-color: #e66a0f;
+}
+
+/* ===== ADMIN MODAL ===== */
+.admin-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.65);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+}
+
+.admin-modal-box {
+  background: #ffffff;
+  width: 380px;
+  padding: 35px 30px;
+  border-radius: 10px;
+  text-align: center;
+  position: relative;
+}
+
+.admin-modal-box h3 {
+  color: #ffaa00;
+  margin-bottom: 8px;
+}
+
+.admin-modal-box p {
+  color: #555;
+  font-size: 15px;
+  margin-bottom: 25px;
+}
+
+/* MODAL BUTTONS */
+.admin-actions {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+}
+
+
+.admin-btn-primary {
+  background: #ff7a18;
+  color: #fff;
+  padding: 10px 18px;
+  border-radius: 4px;
+  text-decoration: none;
+}
+
+.admin-btn-secondary {
+  background: #194067;
+  color: #fff;
+  padding: 10px 18px;
+  border-radius: 4px;
+  text-decoration: none;
+}
+
+.admin-btn-primary:hover {
+  background: #e66a0f;
+}
+
+.admin-btn-secondary:hover {
+  background: #102a44;
+}
+
+/* CLOSE ICON */
+.close-modal {
+  position: absolute;
+  top: 12px;
+  right: 14px;
+  font-size: 22px;
+  cursor: pointer;
+  color: #999;
+}
+
+.close-modal:hover {
+  color: #000;
+}

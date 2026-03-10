@@ -1,0 +1,260 @@
+{% extends "agency_side/agency_dashboard.html" %}
+{% block content %}
+
+<style>
+
+.page-title{
+    font-size:22px;
+    font-weight:700;
+    margin-bottom:25px;
+    color:#0b1c2d;
+}
+
+.order-table{
+    width:100%;
+    border-collapse:collapse;
+    background:#fff;
+    border-radius:10px;
+    overflow:hidden;
+    box-shadow:0 6px 20px rgba(0,0,0,0.08);
+}
+
+.order-table th{
+    background:#0b1c2d;
+    color:#fff;
+    padding:14px;
+    font-size:14px;
+    text-align:left;
+}
+
+.order-table td{
+    padding:14px;
+    border-bottom:1px solid #eee;
+    font-size:14px;
+}
+
+.order-table tr:hover{
+    background:#f9f9f9;
+}
+
+/* STATUS BADGE */
+
+.badge{
+    padding:6px 12px;
+    border-radius:20px;
+    font-size:12px;
+    font-weight:600;
+    color:#fff;
+}
+
+.Placed{ background:#6c757d; }
+.AgencyApproved{ background:#28a745; }
+.AgencyRejected{ background:#dc3545; }
+.Processing{ background:#17a2b8; }
+.OutForDelivery{ background:#ff9800; }
+.Delivered{ background:#4caf50; }
+.Cancelled{ background:#f44336; }
+
+/* BUTTONS */
+
+.action-btn{
+    padding:6px 12px;
+    border:none;
+    border-radius:6px;
+    font-size:12px;
+    cursor:pointer;
+    font-weight:600;
+    color:#fff;
+}
+
+.notify-btn{ background:#007bff; }
+.dispatch-btn{ background:#28a745; }
+
+.popup-overlay{
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    background:rgba(0,0,0,0.5);
+    display:none;
+    justify-content:center;
+    align-items:center;
+}
+
+.popup-box{
+    background:#fff;
+    padding:30px;
+    border-radius:10px;
+    width:400px;
+    text-align:center;
+}
+
+.btn{
+    padding:8px 18px;
+    border:none;
+    border-radius:6px;
+    cursor:pointer;
+    margin:10px;
+}
+
+.btn-yes{
+    background:#28a745;
+    color:#fff;
+}
+
+.btn-no{
+    background:#dc3545;
+    color:#fff;
+}
+
+</style>
+
+<div class="page-title">
+Agency Orders
+</div>
+
+<table class="order-table">
+
+<thead>
+<tr>
+    <th>Order ID</th>
+    <th>Engineer</th>
+    <th>Phone</th>
+    <th>Final Bill</th>
+    <th>Ordered Time</th>
+    <th>Expected Delivery</th>
+    <th>Notify</th>
+    <th>Status</th>
+    <th>Dispatch</th>
+    <th>Dispatched Time</th>
+</tr>
+</thead>
+
+<tbody>
+
+{% for order in orders %}
+<tr>
+
+<td>#{{ order.id }}</td>
+
+<td>{{ order.engineer.engineer_profile.full_name }}</td>
+
+<td>{{ order.engineer.engineer_profile.phone_number }}</td>
+
+<td>₹ {{ order.total_amount }}</td>
+
+<td>
+    {{ order.created_at|date:"d M Y" }}<br>
+    {{ order.created_at|time:"h:i A" }}
+</td>
+
+<!-- ✅ EXPECTED DELIVERY -->
+<td>
+{% if order.delivery %}
+    {{ order.delivery.delivery_date|date:"d M Y" }}<br>
+    {{ order.delivery.delivery_time|time:"h:i A" }}
+{% else %}
+    -
+{% endif %}
+</td>
+
+<!-- ✅ NOTIFY DROPDOWN -->
+<td>
+{% if order.order_status == "Placed" %}
+<form method="POST" action="{% url 'agency_update_order_status' order.id %}">
+    {% csrf_token %}
+    <select name="status" required>
+        <option value="">Select</option>
+        <option value="AgencyApproved">Approve</option>
+        <option value="AgencyRejected">Reject</option>
+    </select>
+    <button type="submit" class="action-btn notify-btn">
+        Update
+    </button>
+</form>
+{% else %}
+    -
+{% endif %}
+</td>
+
+<!-- STATUS -->
+<td>
+<span class="badge {{ order.order_status }}">
+    {{ order.get_order_status_display }}
+</span>
+</td>
+
+<!-- DISPATCH BUTTON -->
+<td>
+{% if order.order_status == "AgencyApproved" and order.delivery.delivery_status != "Dispatched" %}
+
+<button type="button"
+        class="action-btn dispatch-btn"
+        onclick="openPopup({{ order.id }})">
+    Dispatch
+</button>
+
+{% elif order.delivery.delivery_status == "Dispatched" %}
+    <span style="color:green;font-weight:600;">Dispatched</span>
+{% else %}
+    -
+{% endif %}
+</td>
+
+
+<!-- DISPATCHED TIME -->
+<td>
+{% if order.delivery.delivery_status == "Dispatched" %}
+    {{ order.delivery.created_at|date:"d M Y" }}<br>
+    {{ order.delivery.created_at|time:"h:i A" }}
+{% else %}
+    -
+{% endif %}
+</td>
+
+</tr>
+
+{% empty %}
+<tr>
+<td colspan="11" style="text-align:center;">
+No Orders Found.
+</td>
+</tr>
+{% endfor %}
+
+</tbody>
+</table>
+
+<!-- DISPATCH POPUP -->
+<div id="dispatchPopup" class="popup-overlay">
+
+  <div class="popup-box">
+    <h3>Are you sure your product is ready to dispatch?</h3>
+
+    <form id="dispatchForm" method="POST">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-yes">Yes</button>
+    <button type="button" onclick="closePopup()" class="btn btn-no">No</button>
+</form>
+
+
+  </div>
+</div>
+
+<script>
+
+function openPopup(orderId){
+    const form = document.getElementById("dispatchForm");
+    form.action = "{% url 'agency_dispatch_order' 0 %}".replace("0", orderId);
+    document.getElementById("dispatchPopup").style.display="flex";
+}
+
+
+function closePopup(){
+    document.getElementById("dispatchPopup").style.display="none";
+}
+
+</script>
+
+{% endblock %}
