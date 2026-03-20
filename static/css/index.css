@@ -1,50 +1,49 @@
 /* ===== GLOBAL RESET ===== */
-body{
+body {
   margin: 0;
   padding: 0;
-  font: normal 500 24px "Oswald", sans-serif;
+  font-family: "Oswald", sans-serif;
+  font-size: 16px;
   background: #f5f7fa;
   overflow-x: hidden;
+  line-height: 1.6;
 }
 
 /* ===== HERO ===== */
 .hero-section {
   background: linear-gradient(135deg, #0b1c2d, #163c61);
-  padding: 100px 80px;
+  padding: 60px 20px;
   text-align: center;
-  animation: fadeInHero 1.2s ease-in-out;
 }
 
-.hero-section h1{
+.hero-section h1 {
   color: #ff7a18;
-  font-size: 42px;
-  animation: slideUp 1s ease forwards;
+  font-size: 32px;
+  margin-bottom: 10px;
 }
 
-.hero-section p{
-  color: #fff;
-  font-size: 18px;
-  margin-top: 15px;
-  opacity: 0;
-  animation: fadeText 1.5s ease forwards;
-  animation-delay: .5s;
+.hero-section p {
+  color: #ffffff;
+  font-size: 16px;
+  max-width: 600px;
+  margin: auto;
 }
 
-p{
-  font-size: 22px;
-}
 /* ===== HEADINGS ===== */
 h2 {
   color: #ff7a18;
-  font: normal 700 26px "Oswald", sans-serif;
-  margin-bottom: 20px;
+  font-size: 22px;
+  margin-bottom: 5px;
+  text-align: center;
 }
 
 /* ===== SECTIONS ===== */
 section {
-  padding: 60px 80px;
-  background-color: #ffffff;
-  animation: fadeInSection 1s ease;
+  padding: 15px 15px;
+  background: #ffffff;
+}
+section p {
+   text-align: center;
 }
 
 /* ===== GRIDS ===== */
@@ -52,8 +51,10 @@ section {
 .flow-grid,
 .signup-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 30px;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 20px;
+  max-width: 1100px;
+  margin: auto;
 }
 
 /* ===== CARDS ===== */
@@ -61,56 +62,54 @@ section {
 .signup-card,
 .road {
   background: #dde7f5;
-  padding: 35px;
-  font: normal 400 20px "Oswald", sans-serif;
+  padding: 20px;
+  font-size: 16px;
   text-align: center;
   border-radius: 10px;
-  transition: all 0.3s ease;
-  transform: translateY(0);
-  box-shadow: 0 8px 18px rgba(0,0,0,0.05);
+  transition: 0.3s;
+  box-shadow: 0 5px 12px rgba(0,0,0,0.08);
 }
 
-/* Hover Lift Effect */
 .service-card:hover,
 .signup-card:hover,
 .road:hover {
-  transform: translateY(-8px);
-  box-shadow: 0 12px 25px rgba(0,0,0,0.15);
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.15);
 }
 
-/* ===== SIGNUP CARD EXTRA ===== */
+/* ===== SIGNUP CARD ===== */
 .signup-card h3 {
-  font: normal 600 22px "Oswald", sans-serif;
-  margin-bottom: 10px;
+  font-size: 18px;
+  margin-bottom: 8px;
 }
 
-/* ===== BUTTON GROUP ===== */
+.signup-card p {
+  font-size: 14px;
+}
+
+/* ===== BUTTONS ===== */
 .action-btns {
-  margin-top: 25px;
+  margin-top: 15px;
   display: flex;
   justify-content: center;
-  gap: 15px;
+  gap: 10px;
 }
 
-/* ===== COMMON BUTTON ===== */
 .btn {
-  padding: 12px 24px;
-  font: normal 500 18px "Oswald", sans-serif;
+  padding: 10px 18px;
+  font-size: 14px;
+  border-radius: 5px;
   text-decoration: none;
-  border-radius: 6px;
   color: #fff;
-  transition: all 0.3s ease;
-  position: relative;
-  overflow: hidden;
+  transition: 0.3s;
 }
 
-/* Glow Effect */
+/* Hover */
 .btn:hover {
   transform: scale(1.05);
-  box-shadow: 0 0 12px rgba(255,122,24,0.5);
 }
 
-/* SIGNUP BUTTON */
+/* SIGNUP */
 .signup-btn {
   background: #ff7a18;
 }
@@ -119,7 +118,7 @@ section {
   background: #e66a0f;
 }
 
-/* LOGIN BUTTON */
+/* LOGIN */
 .login-btn {
   background: #0b1c2d;
 }
@@ -128,39 +127,17 @@ section {
   background: #102a44;
 }
 
-.signup-card p {
-  font-size: 14px;
-}
-
-/* ===== ANIMATIONS ===== */
-
-@keyframes fadeInHero {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-@keyframes slideUp {
-  from {
-    transform: translateY(40px);
-    opacity: 0;
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+  .hero-section h1 {
+    font-size: 26px;
   }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
-}
 
-@keyframes fadeText {
-  to { opacity: 1; }
-}
-
-@keyframes fadeInSection {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
+  .hero-section p {
+    font-size: 14px;
   }
-  to {
-    opacity: 1;
-    transform: translateY(0);
+
+  h2 {
+    font-size: 20px;
   }
 }
