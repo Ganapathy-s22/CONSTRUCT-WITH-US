@@ -1,0 +1,105 @@
+{% extends 'common/base.html' %}
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/index.css' %}">
+
+<!-- HERO -->
+<section class="hero-section">
+  <h1>Build Smarter with Trusted Suppliers</h1>
+  <p>Connect with verified suppliers, compare quotations, and manage
+    construction materials efficiently — all in one secure platform.</p>
+</section>
+
+<!-- SERVICES -->
+<section class="services-section">
+    <h2>Our Core Solutions</h2>
+  <div class="services-grid">
+    <div class="service-card">
+      <h3>Efficient Material Procurement</h3>
+      <p>Streamline material sourcing with structured quotation management.</p>
+    </div>
+    <div class="service-card">
+      <h3>Verified Supplier Network</h3>
+      <p>Work only with trusted and validated construction agencies.</p>
+    </div>
+    <div class="service-card">
+      <h3>Location-Based Supplier Matching</h3>
+      <p>Discover suppliers near your project site for faster delivery.</p>
+    </div>
+  </div>
+</section>
+
+<!-- WHO WE ARE -->
+<section class="about-section">
+  <h2>Who We Are</h2>
+  <p>
+    ConstructWithUs connects engineers and construction agencies with
+    verified suppliers to simplify procurement.
+  </p>
+    <p>
+    ConstructWithUs is a centralized digital procurement platform designed 
+    for engineers and construction agencies. We simplify the material sourcing 
+    process by ensuring transparency, accountability, and real-time quotation management.
+  </p>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="flow-section">
+  <h2>How It Works</h2>
+  <div class="flow-grid">
+    <div class="road">
+      <h3>1. Submit Request</h3>
+      <p>Engineers submit material requirements for their project.</p>
+    </div>
+    <div class="road">
+      <h3>2. Receive Competitive Quotes</h3>
+      <p>Verified suppliers respond with transparent quotations.</p>
+    </div>
+    <div class="road">
+      <h3>3. Review & Finalize</h3>
+      <p>Compare prices, approve the best offer, and generate final bills securely.</p>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIAL -->
+<section class="testimonial-section">
+   <h2>Trusted by Construction Professionals</h2>
+  <p>
+    “ConstructWithUs helped us reduce procurement delays and improve cost transparency.”
+  </p>
+</section>
+
+<!-- SIGNUP / LOGIN CTA -->
+<section class="signup-section">
+  <h2> Join the Network Today Get Started</h2>
+
+  <div class="signup-grid">
+
+    <!-- ENGINEER / USER -->
+    <div class="signup-card">
+      <h3>Engineer / Customer</h3>
+      <p>Simplify material procurement, compare quotations, and manage projects with confidence.</p>
+
+      <div class="action-btns">
+        <a href="{% url 'eng_signup' %}" class="btn signup-btn"><p>Sign Up</p></a>
+        <a href="{% url 'eng_login' %}" class="btn login-btn"><p>Login</p></a>
+      </div>
+    </div>
+
+    <!-- SUPPLIER / AGENCY -->
+    <div class="signup-card">
+      <h3>Supplier / Agency</h3>
+      <p>Expand your business reach, respond to verified requests, and grow your client base.</p>
+
+      <div class="action-btns">
+        <a href="{% url 'agy_signup' %}" class="btn signup-btn"><p>Sign Up</p></a>
+        <a href="{% url 'agy_login' %}" class="btn login-btn"><p>Login</p></a>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+{% endblock %}

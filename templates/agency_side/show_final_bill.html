@@ -1,0 +1,254 @@
+{% extends "agency_side/agency_dashboard.html" %}
+{% load static %}
+{% block content %}
+
+<style>
+
+.quote-badge{
+  background:#28a745;
+  padding:8px 16px;
+  display:inline-block;
+  font-weight:bold;
+  border-radius:20px;
+  margin-bottom:20px;
+  color:#fff;
+}
+
+.invoice-container{
+  background:#fff;
+  padding:40px;
+  border-radius:10px;
+  box-shadow:0 4px 20px rgba(0,0,0,0.08);
+}
+
+.invoice-header{
+  display:flex;
+  justify-content:space-between;
+}
+
+.details-section{
+  display:flex;
+  justify-content:space-between;
+  margin:30px 0;
+}
+
+.invoice-table{
+  width:100%;
+  border-collapse:collapse;
+  margin-top:20px;
+}
+
+.invoice-table th,
+.invoice-table td{
+  border-bottom:1px solid #ddd;
+  padding:12px;
+  text-align:left;
+}
+
+.invoice-table th{
+  background:#f5f5f5;
+}
+
+.total-box{
+  text-align:right;
+  margin-top:20px;
+}
+
+.breakdown-box{
+  margin-top:15px;
+  background:#f8f9fa;
+  padding:20px;
+  border-radius:8px;
+}
+
+.line{
+  display:flex;
+  justify-content:space-between;
+  margin:8px 0;
+  font-size:15px;
+}
+
+.final-line{
+  font-size:20px;
+  font-weight:bold;
+  color:#0b1c2d;
+}
+
+.back-section{
+  margin-top:30px;
+  text-align:center;
+}
+
+.back-btn{
+  background:#6c757d;
+  color:#fff;
+  padding:10px 25px;
+  border-radius:6px;
+  text-decoration:none;
+  font-weight:600;
+}
+
+.back-btn:hover{
+  background:#5a6268;
+}
+.countdown-timer{ 
+  font-size: xx-large;
+  margin-left: 37%;
+  color: #28a745;
+}
+</style>
+
+<div class="quote-badge"> #{{ quotation.id }} Final Bill</div>
+    <div class="validity-box">
+  <strong>Quotation Valid Until :</strong>
+  {{ quotation.quotation_valid_until|date:"d M Y, h:i A" }}
+</div>
+<div id="countdown" class="countdown-timer"></div>
+
+<div class="invoice-container">
+
+  <!-- HEADER -->
+  <div class="invoice-header">
+    <div>
+      <h2>Final Invoice</h2>
+    </div>
+
+    <div>
+      <p><strong>Request ID:</strong> #{{ quotation.id }}</p>
+      <p><strong>Date:</strong> {{ quotation.final_estimate.created_at|date:"d M Y, h:i A" }}</p>
+    </div>
+  </div>
+
+  <hr>
+  <br>
+  <div class="delivery_det">
+    <h4>Delivery Prefferd :       {{ quotation.get_delivery_preference_display }}</h4>  
+    <h4> Delivery Expected Date : {{ quotation.expected_delivery_date|date:"d M Y" }}</h4>  </div>
+  <!-- BILL DETAILS -->
+  <div class="details-section">
+
+    <div>
+      <h4>Engineer Details</h4>
+      <p>Name : {{ quotation.engineer.engineer_profile.full_name }}</p>
+      <p>Phone : {{ quotation.engineer.engineer_profile.phone_number }}</p>
+      <p>Address : {{ quotation.site.site_address }}</p>
+      <p>{{ quotation.site.site_district }} - {{ quotation.site.site_pincode }}</p>
+    </div>
+
+    <div>
+      <h4>Agency Details</h4>
+      <p>Agency : {{ quotation.agency.company_name }}</p>
+      <p>Address : {{ quotation.agency.company_address }}</p>
+      <p>{{ quotation.agency.company_district }} - {{ quotation.agency.company_pincode }}</p>
+    </div>
+
+  </div>
+
+  <!-- PRODUCTS -->
+  <table class="invoice-table">
+    <thead>
+      <tr>
+        <th>Product</th>
+        <th>Qty</th>
+        <th>Price</th>
+        <th>Total</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      {% for item in final_estimate.final_items.all %}
+      <tr>
+        <td>{{ item.product_name }}</td>
+        <td>{{ item.quantity }}</td>
+        <td>₹ {{ item.price }}</td>
+        <td>₹ {{ item.total_price }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <!-- TOTAL SECTION -->
+  <div class="total-box">
+    <h3>Base Total: ₹ {{ quotation.final_estimate.base_total }}</h3>
+
+    <div class="breakdown-box">
+
+      <div class="line">
+        <span>SGST ({{ quotation.final_estimate.sgst_percent }}%)</span>
+        <span>₹ {{ quotation.final_estimate.sgst_amount }}</span>
+      </div>
+
+      <div class="line">
+        <span>CGST ({{ quotation.final_estimate.cgst_percent }}%)</span>
+        <span>₹ {{ quotation.final_estimate.cgst_amount }}</span>
+      </div>
+
+      <div class="line">
+        <span>Platform Fee ({{ quotation.final_estimate.platform_fee_percent }}%)</span>
+        <span>₹ {{ quotation.final_estimate.platform_fee_amount }}</span>
+      </div>
+
+      <div class="line">
+        <span>Transport Charge</span>
+        <span>₹ {{ quotation.final_estimate.transport_charge }}</span>
+      </div>
+
+      <hr>
+
+      <div class="line final-line">
+        <span>Final Total</span>
+        <span>₹ {{ quotation.final_estimate.final_total }}</span>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- BACK BUTTON -->
+  <div class="back-section">
+    <a href="{% url 'manage_requested_replies' %}" 
+       class="back-btn">
+       Go Back
+    </a>
+  </div>
+
+</div>
+<script>
+
+const expiryTime = new Date("{{ quotation.quotation_valid_until|date:'Y-m-d H:i:s' }}").getTime();
+
+const countdownElement = document.getElementById("countdown");
+const placeOrderBtn = document.getElementById("placeOrderBtn");
+const regenBtn = document.getElementById("regenBtn");
+
+const timer = setInterval(function(){
+
+    const now = new Date().getTime();
+
+    const distance = expiryTime - now;
+
+    if(distance <= 0){
+
+        clearInterval(timer);
+
+        countdownElement.innerHTML = "⚠️ Quotation Expired";
+
+        placeOrderBtn.style.display = "none";
+
+        regenBtn.style.display = "inline-block";
+
+        return;
+    }
+
+    const hours = Math.floor((distance % (1000*60*60*24))/(1000*60*60));
+    const minutes = Math.floor((distance % (1000*60*60))/(1000*60));
+    const seconds = Math.floor((distance % (1000*60))/1000);
+
+    countdownElement.innerHTML =
+        "This Quotation expires in : " +
+        hours + "h " + minutes + "m " + seconds + "s";
+
+},1000);
+
+</script>
+
+{% endblock %}

@@ -1,0 +1,139 @@
+{% extends 'common/base.html' %}
+{% load static %}
+
+{% block content %}
+
+<style>
+    body{
+        font-family: "Oswald", sans-serif;
+    }
+  /* ===== SERVICES PAGE ===== */
+  .services-wrapper {
+    padding: 70px 80px;
+    background: #f9fafb;
+  }
+
+  .services-title {
+    text-align: center;
+    font-size: 36px;
+    color: #0b1c2d;
+    margin-bottom: 12px;
+  }
+
+  .services-subtitle {
+    text-align: center;
+    font-size: 18px;
+    color: #555;
+    margin-bottom: 60px;
+  }
+
+  .services-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 35px;
+  }
+
+  .service-card {
+    background: #ffffff;
+    padding: 35px;
+    border-radius: 8px;
+    box-shadow: 0 8px 18px rgba(0,0,0,0.06);
+  }
+
+  .service-card h3 {
+    font-size: 22px;
+    color: #ff7a18;
+    margin-bottom: 15px;
+  }
+
+  .service-card p {
+    font-size: 16px;
+    color: #333;
+    line-height: 1.8;
+  }
+
+  .highlight-box {
+    margin-top: 50px;
+    padding: 30px;
+    background: #0b1c2d;
+    color: #ffffff;
+    border-radius: 8px;
+    text-align: center;
+  }
+
+  .highlight-box h4 {
+    font-size: 22px;
+    color: #ff7a18;
+    margin-bottom: 10px;
+  }
+
+  .highlight-box p {
+    font-size: 16px;
+    line-height: 1.7;
+  }
+
+  @media (max-width: 768px) {
+    .services-wrapper {
+      padding: 40px 25px;
+    }
+  }
+</style>
+
+<div class="services-wrapper">
+
+  <h1 class="services-title">Our Services</h1>
+  <p class="services-subtitle">
+    Powerful tools and services designed for Engineers and Suppliers
+  </p>
+
+  <div class="services-grid">
+
+    <!-- ENGINEER SIDE -->
+    <div class="service-card">
+      <h3>👷 Services for Engineers / Customers</h3>
+      <p>
+        Through ConstructWithUs, engineers can easily search for construction
+        materials based on their project location and requirements.
+      </p>
+      <p>
+        Engineers can:
+        <br>✔ Find verified suppliers nearby
+        <br>✔ Raise material procurement requests
+        <br>✔ Compare supplier quotations
+        <br>✔ Save time and reduce procurement cost
+        <br>✔ Manage requests through a single platform
+      </p>
+    </div>
+
+    <!-- AGENCY SIDE -->
+    <div class="service-card">
+      <h3>🏭 Services for Suppliers / Agencies</h3>
+      <p>
+        ConstructWithUs provides suppliers with a platform to connect directly
+        with engineers who are actively looking for construction materials.
+      </p>
+      <p>
+        Agencies can:
+        <br>✔ Register and showcase their business
+        <br>✔ Receive genuine project enquiries
+        <br>✔ Send quotations to engineers
+        <br>✔ Expand reach beyond local boundaries
+        <br>✔ Build trust through admin verification
+      </p>
+    </div>
+
+  </div>
+
+  <!-- WHY SECTION -->
+  <div class="highlight-box">
+    <h4>Why ConstructWithUs?</h4>
+    <p>
+      ConstructWithUs simplifies construction material procurement by bringing
+      engineers and suppliers together on a secure, location-based platform
+      managed by an admin for transparency and trust.
+    </p>
+  </div>
+
+</div>
+
+{% endblock %}

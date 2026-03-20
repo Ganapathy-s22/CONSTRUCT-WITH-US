@@ -1,0 +1,362 @@
+{% extends "agency_side/agency_dashboard.html" %}
+{% load static %}
+{% block content %}
+
+<style>
+/* ===== TOP PRODUCT NAV TABS ===== */
+.product-tabs {
+  display: flex;
+  background: #ffffff;
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 30px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+}
+
+.product-tab {
+  flex: 1;
+  text-align: center;
+  text-decoration: none;
+  padding: 14px 0;
+  font-weight: 600;
+  color: #0b1c2d;
+  border-right: 1px solid #eee;
+  transition: 0.3s;
+}
+
+.product-tab:last-child {
+  border-right: none;
+}
+
+.product-tab:hover {
+  background: #0b1c2d;
+  color: #fff;
+}
+
+.product-tab.active {
+  background: #0b1c2d;
+  color: #fff;
+}
+
+
+/* ===== HORIZONTAL TABS ===== */
+.category-tabs {
+  display: flex;
+  background: #ffffff;
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 30px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+}
+
+.category-tab {
+  flex: 1;
+  text-align: center;
+  padding: 14px 0;
+  text-decoration: none;
+  font-weight: 600;
+  color: #0b1c2d;
+  border-right: 1px solid #eee;
+  transition: 0.3s;
+}
+
+.category-tab:last-child {
+  border-right: none;
+}
+
+.category-tab:hover {
+  background: #f4f6f9;
+}
+
+.category-tab.active {
+  background: #0b1c2d;
+  color: #fff;
+}
+
+/* ===== PRODUCT GRID ===== */
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 25px;
+  height: 45;
+}
+/* ===== PRODUCT CARD ===== */
+
+.product-card {
+  background: #ffffff;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 6px 15px rgba(0,0,0,0.08);
+  transition: 0.3s;
+
+  display: flex;
+  flex-direction: column;
+}
+
+.product-card:hover {
+  transform: translateY(-4px);
+}
+
+.product-image {
+  width: 100%;
+  height: 300px;
+  padding: 10px;
+  object-fit: cover;
+  border-bottom: 3px solid #ff7a18;
+}
+
+.product-body {
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.product-name {
+  font-weight: 700;
+  margin-bottom: 5px;
+  color: #0b1c2d;
+}
+
+.product-type {
+  font-size: 14px;
+  color: #777;
+  margin-bottom: 10px;
+}
+
+.product-stock{
+  color:#024a13;
+  font-size:16px;
+  margin-bottom:15px;
+}
+
+/* center button */
+.details-btn{
+  margin-top:auto;
+  align-self:center;
+
+  padding:8px 18px;
+  background:#ff7a18;
+  border:none;
+  color:#fff;
+  border-radius:4px;
+  cursor:pointer;
+}
+
+.details-btn:hover{
+  background:#e6680f;
+}
+
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 999;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.6);
+}
+
+.modal-content {
+  background: #fff;
+  margin: 5% auto;
+  padding: 25px;
+  width: 600px;
+  border-radius: 8px;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.close-btn {
+  float: right;
+  font-size: 22px;
+  cursor: pointer;
+}
+
+.variant-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 15px;
+}
+
+.variant-table th,
+.variant-table td {
+  border-bottom: 1px solid #ddd;
+  padding: 8px;
+  text-align: center;
+}
+
+@keyframes fadeIn {
+  from { transform: scale(0.9); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+
+</style>
+
+<div class="product-tabs">
+  <a href="{% url 'agency_all_products' %}" class="product-tab {% if active_tab == 'all' %}active{% endif %}">
+    All Products
+  </a>
+
+  <a href="{% url 'add_product' %}" class="product-tab {% if active_tab == 'add' %}active{% endif %}">
+    Add Product
+  </a>
+
+   <a href="{% url 'add_product_variation' %}"
+     class="product-tab {% if active_tab == 'variation' %}active{% endif %}">
+     Add Product Variations
+  </a>
+
+  <a href="{% url 'edit_delete_product' %}" class="product-tab {% if active_tab == 'edit' %}active{% endif %}">
+    Edit & Remove Product
+  </a>
+</div>
+
+<h1>Categories</h1><br>
+
+<!-- ===== CATEGORY TABS ===== -->
+<div class="category-tabs">
+  <a href="?type=all"
+     class="category-tab {% if active_type == 'all' %}active{% endif %}">
+     All
+  </a>
+
+  <a href="?type=cement"
+     class="category-tab {% if active_type == 'cement' %}active{% endif %}">
+     Cement
+  </a>
+
+  <a href="?type=steel"
+     class="category-tab {% if active_type == 'steel' %}active{% endif %}">
+     Steel
+  </a>
+
+  <a href="?type=bricks"
+     class="category-tab {% if active_type == 'bricks' %}active{% endif %}">
+     Bricks
+  </a>
+
+  <a href="?type=others"
+     class="category-tab {% if active_type == 'others' %}active{% endif %}">
+     Others
+  </a>
+</div>
+
+
+<!-- ===== PRODUCT CARDS ===== -->
+<div class="product-grid">
+
+{% for product in products %}
+
+  <div class="product-card">
+
+    {% if product.image %}
+      <img src="{{ product.image.url }}" class="product-image">
+    {% else %}
+      <img src="{% static 'images/no-image.png' %}" class="product-image">
+    {% endif %}
+
+    <div class="product-body">
+
+      <div class="product-name">
+        {{ product.product_name }}
+      </div>
+
+      <div class="product-type">
+        {{ product.get_product_type_display }}
+      </div>
+
+
+      <div class="product-stock" style="color:#079929; font-size: 16px;">
+      {% if product.variants.count > 0 %}
+  Variants: {{ product.variants.count }}
+{% else %}
+  No Variants Available
+{% endif %}</div>
+      <div class="product-stock" style="color:#2834d7; font-size: 16px;">
+       Stocks: {% if product.variants.count > 0 %}
+  Products Available
+{% else %}
+  No Product Available
+{% endif %}
+        </div>
+
+      <button class="details-btn"
+        onclick="openModal(
+          '{{ product.product_name }}',
+          '{{ product.get_product_type_display }}',
+          [
+            {% for v in product.variants.all %}
+              {
+                name: '{{ v.spc_product_name|escapejs }}',
+                size: '{{ v.size_or_weight }}',
+                price: '{{ v.price }}',
+                stock: '{{ v.stock }}',
+              },
+            {% endfor %}
+          ]
+            )">
+         View variants
+        </button>
+    </div>
+  </div>
+
+  <!-- ===== PRODUCT MODAL ===== -->
+<div id="productModal" class="modal">
+  <div class="modal-content">
+    <span class="close-btn" onclick="closeModal()">&times;</span>
+
+    <h2 id="modalProductName">productname :</h2>
+    <p id="modalProductType"></p><br>
+
+    <h4>Variants:</h4>
+    <table class="variant-table">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Size</th>
+          <th>Stock</th>
+        </tr>
+      </thead>
+      <tbody id="variantTableBody">
+      </tbody>
+    </table>
+  </div>
+</div>
+
+
+{% empty %}
+  <p>No products available.</p>
+{% endfor %}
+
+</div>
+
+<script>
+function openModal(name, type, variants) {
+
+  document.getElementById("modalProductName").innerText = name;
+  document.getElementById("modalProductType").innerText = type;
+
+  let tableBody = document.getElementById("variantTableBody");
+  tableBody.innerHTML = "";
+
+  variants.forEach(v => {
+    tableBody.innerHTML += `
+      <tr>
+        <td>${v.name}</td>
+        <td>${v.size}</td>
+        <td>${v.stock}</td>
+      </tr>
+    `;
+  });
+
+  document.getElementById("productModal").style.display = "block";
+}
+
+function closeModal() {
+  document.getElementById("productModal").style.display = "none";
+}
+</script>
+
+{% endblock %}

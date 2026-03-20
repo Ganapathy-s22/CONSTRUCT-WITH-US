@@ -1,0 +1,218 @@
+{% extends "engineer_side/engineer_dashboard.html" %}
+{% load static %}
+
+{% block content %}
+<style>
+.quote-badge{
+  background:#ffc107;
+  padding:8px 16px;
+  display:inline-block;
+  font-weight:bold;
+  border-radius:20px;
+  margin-bottom:20px;
+}
+
+.invoice-container{
+  background:#fff;
+  padding:40px;
+  border-radius:10px;
+  box-shadow:0 4px 20px rgba(0,0,0,0.08);
+}
+
+.invoice-header{
+  display:flex;
+  justify-content:space-between;
+}
+
+.details-section{
+  display:flex;
+  justify-content:space-between;
+  margin:30px 0;
+}
+
+.invoice-table{
+  width:100%;
+  border-collapse:collapse;
+  margin-top:20px;
+}
+
+.invoice-table th,
+.invoice-table td{
+  border-bottom:1px solid #ddd;
+  padding:12px;
+  text-align:left;
+}
+
+.invoice-table th{
+  background:#f5f5f5;
+}
+
+.total-box{
+  text-align:right;
+  margin-top:20px;
+}
+
+.request-options{
+  margin-top:30px;
+  background:#f8f9fa;
+  padding:15px;
+  border-radius:8px;
+}
+
+.invoice-actions{
+  margin-top:20px;
+  text-align:center;
+}
+
+.btn-download{
+  background:#28a745;
+  padding:10px 20px;
+  color:#fff;
+  border-radius:6px;
+  text-decoration:none;
+  margin-right:15px;
+}
+
+.btn-back{
+  background:#6c757d;
+  padding:10px 20px;
+  color:#fff;
+  border-radius:6px;
+  text-decoration:none;
+}
+
+@media print {
+
+  body * {
+      visibility: hidden;
+  }
+
+  .invoice-container,
+  .invoice-container * {
+      visibility: visible;
+  }
+
+  .invoice-container {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+  }
+
+  .invoice-actions {
+      display: none !important;
+  }
+
+  .quote-badge {
+      display: none !important;
+  }
+
+}
+
+</style>
+
+<h2 style="color: #28a745;justify-content: center;">#{{ quotation.id }} Request Sended Successfully </h2><br>
+<div class="quote-badge">Requested Quotation </div>
+
+<div class="invoice-container">
+
+  <!-- HEADER -->
+  <div class="invoice-header">
+
+    <div class="left">
+      <h2>#{{ quotation.id }} Request Quotation Invoice</h2>
+    </div>
+
+    <div class="right">
+      <p><strong>Request ID:</strong> #{{ quotation.id }}</p>
+      <p><strong>Date:</strong> {{ quotation.created_at|date:"d M Y, h:i A" }}</p>
+    </div>
+
+  </div>
+
+  <hr><br>
+  <div class="delivery_det">
+    <h4>Delivery Prefferd :       {{ quotation.get_delivery_preference_display }}</h4>  
+    <h4> Delivery Expected Date : {{ quotation.expected_delivery_date|date:"d M Y" }}</h4>  </div>
+
+  <!-- ENGINEER + AGENCY DETAILS -->
+  <div class="details-section" >
+    
+
+    <div class="engineer-details">
+      <h4>Engineer Details: </h4>
+      <p>Name: {{ engineer.engineer_profile.full_name }}</p>
+      <p>Phone: {{ engineer.engineer_profile.phone_number }}</p>
+      <p>Address: {{ site.site_address }}</p>
+      <p>{{ site.site_district }} - {{ site.site_pincode }}</p>
+    </div>
+
+    <div class="agency-details">
+      <h4>Agency Details: </h4>
+      <p>Name: {{ quotation.agency.company_name }}</p>
+      <p>Address: {{ quotation.agency.company_address }}</p>
+      <p>{{ quotation.agency.company_district }} - {{ quotation.agency.company_pincode }}</p>
+    </div>
+
+  </div>
+
+  <!-- PRODUCTS TABLE -->
+  <table class="invoice-table">
+
+    <thead>
+      <tr>
+        <th>Product</th>
+        <th>Qty</th>
+        <th>Estimated Price</th>
+        <th>Total</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      {% for item in items %}
+
+      <tr>
+        <td>{{ item.product_name }}</td>
+        <td>{{ item.quantity }}</td>
+        <td>₹ {{ item.price }}</td>
+        <td>₹ {{ item.total_price }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+
+  </table>
+
+  <div class="total-box">
+    <h3>Estimated Total Cost: ₹ {{ total_amount }}</h3>
+  </div>
+
+  <!-- REQUEST OPTIONS -->
+  <div class="request-options">
+    <p>✔ Send me the final price of all the products with transport calculation.</p>
+  </div>
+
+</div>
+
+<!-- BUTTONS -->
+<div class="invoice-actions">
+
+  <a href="#"
+   onclick="printQuotation()"
+   class="btn-download">
+   Download Request
+</a>
+
+
+  <a href="{% url 'manage_quotations_orders' site.id %}"
+     class="btn-back">
+     Back to Quotation Page
+  </a>
+
+</div>
+<script>
+function printQuotation() {
+    window.print();
+}
+</script>
+
+{% endblock %}

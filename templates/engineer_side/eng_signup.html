@@ -1,0 +1,259 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Engineer Signup</title>
+  <link rel="stylesheet" href="{% static 'css/users/eng_signup.css' %}">
+</head>
+<body>
+
+<div class="signup-wrapper">
+
+  <h2>Engineer / Customer Signup</h2>
+  <p class="subtitle">Create your account to get started</p>
+  {% if messages %}
+  <div class="msg-box">
+    {% for message in messages %}
+      <div class="msg {{ message.tags }}">
+        {{ message }}
+      </div>
+    {% endfor %}
+  </div>
+{% endif %}  
+
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+
+    <!-- TWO COLUMN GRID -->
+    <div class="form-grid">
+
+      <!-- LEFT COLUMN -->
+      <div class="left-form">
+
+        <!-- BASIC DETAILS -->
+        <div class="form-section">
+          <h3>Basic Details</h3>
+
+          <label>Username :</label>
+          <input type="text" name="username" id="username" placeholder="Username" value="{{old.username|default:''}}" required>
+          <span><small class="live-msg" id="usernameMsg"></small></span>
+
+          <label>Email :</label>
+          <input type="email" name="email" id="email" value="{{old.email|default:''}}"placeholder="Email Address" required>
+          <span><small class="live-msg" id="emailMsg"></small></span>
+
+          <label>Password :</label>
+          <div class="password-box">
+            <input type="password" id="password" name="password" placeholder="Password" required>
+            <span onclick="togglePassword('password', this)">Show</span>
+          </div>
+
+          <label>Re-Enter Password :</label>
+          <div class="password-box">
+            <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Re-enter Password" required>
+            <span onclick="togglePassword('confirmPassword', this)">Show</span>
+          </div>
+        </div>
+
+        <!-- EDUCATIONAL DETAILS -->
+        <div class="form-section">
+          <h3>Educational Details</h3>
+
+          <label>Degree :</label>
+          <select name="degree" id="degree" name="degree"  onchange="toggleOtherDegree()" required>
+            <option value="">Select Degree</option>
+            <option value="BE">BE </option>
+            <option value="BTech">BTech </option>
+            <option value="ME">ME</option>
+            <option value="MTech">MTech</option>
+            <option value="Diploma">Diploma</option>
+            <option value="Others">Others</option>
+          </select>
+
+          <input type="text" id="otherDegree"
+                 name="other_degree"
+                 placeholder="Mention your degree"
+                 style="display:none;">
+
+          <label>College / University Name :</label>
+          <input type="text" name="college" value="{{old.college|default:''}}"placeholder="College / University Name" required>
+
+          <label>Clg_District :</label>
+          <input type="text" name="clg_district" value="{{old.clg_district|default:''}}" placeholder="District" required>
+
+          <label>Degree Certificate (Max 5MB) :</label>
+          <input type="file" name="certificate" accept=".pdf,.jpg,.png" required>
+        </div>
+
+      </div>
+
+      <!-- RIGHT COLUMN -->
+      <div class="right-form">
+
+        <!-- PERSONAL DETAILS -->
+        <div class="form-section">
+          <h3>Personal Details</h3>
+
+          <label>Full Name :</label>
+          <input type="text" name="fullname" value="{{old.clg_district|default:''}}" placeholder="Full Name" required>
+
+          <label>Age :</label>
+          <input type="number" name="age" min="18" value="{{old.age|default:''}}"placeholder="Age (18+)" required>
+
+          <label>Gender :</label>
+          <select name="gender" value="{{old.gender|default:''}}" required>
+            <option value="">Select Gender</option>
+            <option>Male</option>
+            <option>Female</option>
+            <option>Other</option>
+          </select>
+
+          <label>Date of Birth :</label>
+          <input type="date" name="dob"value="{{old.dob|default:''}}" required>
+
+          <label>Phone Number :</label>
+          <input type="tel" name="phone" id="phone" value="{{old.phone|default:''}}"placeholder="Phone Number" required>
+          <span><small class="live-msg" id="phoneMsg"></small></span>
+          <label>Address :</label>
+          <textarea name="address" placeholder="Address" required>{{ old.address|default:'' }}</textarea>
+
+          <label>District :</label>
+          <input type="text" name="district" value="{{old.engdistrict|default:''}}" placeholder="district" required>
+
+          <label>State :</label>
+          <input type="text" name="state"value="{{old.state|default:''}}" placeholder="State" required>
+
+          <label>Pincode :</label>
+          <input type="text" name="pincode" placeholder="Pincode" value="{{old.pincode|default:''}}"required>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- TERMS -->
+<div class="terms">
+  <label class="terms-inline">
+  <input type="checkbox" id="termsCheck" name="terms_accepted" required>
+  <span class="terms-text">
+    I understood the terms and conditions *
+    <span class="read-more" onclick="openTerms()">Read more</span>
+  </span>
+</label>
+
+<!-- hidden field to send backend -->
+<input type="hidden" name="terms_accepted" id="termsAccepted" value="false">
+
+</div>
+
+    <!-- SUBMIT -->
+  <button type="submit" class="signup-btn" id="signupBtn" disabled>
+  Sign Up
+  </button>
+
+
+  </form>
+</div>
+
+<!-- TERMS MODAL -->
+<div class="terms-modal" id="termsModal">
+  <div class="terms-box">
+    <h3>Terms & Conditions</h3>
+
+    <div class="terms-content">
+      <p>
+        1. Only genuine engineers are allowed to register.<br><br>
+        2. All information provided must be accurate and verifiable.<br><br>
+        3. Uploaded certificates will be reviewed and approved by admin.<br><br>
+        4. Engineers can contact agencies only after login approval.<br><br>
+        5. Any misuse of the platform may lead to account suspension.
+      </p>
+    </div>
+
+    <button class="close-btn" onclick="closeTerms()">Close</button>
+  </div>
+</div>
+
+<!-- JS -->
+<script>
+  function togglePassword(id, btn) {
+    const field = document.getElementById(id);
+    if (field.type === "password") {
+      field.type = "text";
+      btn.innerText = "Hide";
+    } else {
+      field.type = "password";
+      btn.innerText = "Show";
+    }
+  }
+
+  function toggleOtherDegree() {
+    const degree = document.getElementById("degree").value;
+    document.getElementById("otherDegree").style.display =
+      degree === "Others" ? "block" : "none";
+  }
+
+  function openTerms() {
+    document.getElementById("termsModal").style.display = "flex";
+  }
+
+  function closeTerms() {
+    document.getElementById("termsModal").style.display = "none";
+  }
+</script>
+<script>
+  const checkbox = document.getElementById("termsCheck");
+  const signupBtn = document.getElementById("signupBtn");
+  const hiddenTerms = document.getElementById("termsAccepted");
+
+  checkbox.addEventListener("change", function () {
+    if (this.checked) {
+      signupBtn.disabled = false;
+      hiddenTerms.value = "true";
+    } else {
+      signupBtn.disabled = true;
+      hiddenTerms.value = "false";
+    }
+  });
+</script>
+
+<script>
+function checkField(url, value, msgBox, fieldName) {
+  if (value.length < 3) {
+    msgBox.innerText = "";
+    return;
+  }
+
+  fetch(`${url}?${fieldName}=${value}`)
+    .then(res => res.json())
+    .then(data => {
+      if (data.exists) {
+        msgBox.innerText = `${fieldName} already exists`;
+        msgBox.style.color = "red";
+      } else {
+        msgBox.innerText = `${fieldName} available`;
+        msgBox.style.color = "green";
+      }
+    });
+}
+
+/* USERNAME */
+document.getElementById("username").addEventListener("keyup", function () {
+  checkField("/check-username/", this.value, document.getElementById("usernameMsg"), "username");
+});
+
+/* EMAIL */
+document.getElementById("email").addEventListener("keyup", function () {
+  checkField("/check-email/", this.value, document.getElementById("emailMsg"), "email");
+});
+
+/* PHONE */
+document.getElementById("phone").addEventListener("keyup", function () {
+  checkField("/check-phone/", this.value, document.getElementById("phoneMsg"), "phonenumber");
+});
+</script>
+
+
+</body>
+</html>

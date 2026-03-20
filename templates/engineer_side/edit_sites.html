@@ -1,0 +1,350 @@
+{% extends "engineer_side/engineer_dashboard.html" %}
+{% block content %}
+
+<style>
+
+.edit-wrapper{
+  max-width:1100px;
+  margin:auto;
+  background:#fff;
+  padding:30px;
+  border-radius:10px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+}
+
+.edit-wrapper h2{
+    margin-left: 32.5%;
+}
+
+.section-title{
+  font-size:18px;
+  font-weight:700;
+  margin-top:18px;
+  margin-bottom:18px;
+  color:#ff7a18;
+}
+
+.grid-2{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:25px;
+}
+
+.form-group{
+  margin-bottom:15px;
+}
+
+.form-group label{
+  font-weight:600;
+  font-size:14px;
+}
+
+.form-control{
+  width:100%;
+  padding:8px;
+  border:1px solid #ccc;
+  border-radius:6px;
+}
+
+.form-control[readonly]{
+  background:#f5f5f5;
+}
+
+.action-buttons{
+  text-align:center;
+  margin-top:25px;
+  
+}
+
+.big-btn{
+  padding:10px 25px;
+  border:none;
+  border-radius:2px;
+  
+  font-weight:600;
+  cursor:pointer;
+}
+
+.edit-btn{ background:#0b1c2d; color:#fff; }
+.save-btn{ background:#ff7a18; color:#fff; }
+
+.save-btn:disabled{
+  background:#ccc;
+  cursor:not-allowed;
+}
+
+.modal-close{
+      margin-left: 95%;
+}
+</style>
+
+<div class="edit-wrapper">
+
+<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+
+  <h2 style="margin:0;">
+    Edit Construction Site Details
+  </h2>
+
+  <a href="{% url 'edit_delete_site' %}"
+     style="
+        background:rgb(213, 6, 6);
+        color:#fff;
+        padding:8px 18px;
+        text-decoration:none;
+        border-radius:4px;
+        font-weight:600;
+        font-size:14px;
+     ">
+     ← Back
+  </a>
+
+</div>
+
+
+{% if messages %}
+  {% for message in messages %}
+    <div style="color:green;font-weight:600;margin-bottom:15px;">
+      {{ message }}
+    </div>
+  {% endfor %}
+{% endif %}
+
+<form method="POST" enctype="multipart/form-data">
+{% csrf_token %}
+<div class="grid-2">
+
+<!-- ================= LEFT SIDE ================= -->
+<div>
+
+<div class="section-title">Construction Site Details</div>
+
+
+<div class="form-group">
+<label>Site Name</label>
+<input type="text" name="site_name"
+value="{{ site.site_name }}"
+class="form-control editable" readonly>
+</div>
+
+<div class="form-group">
+<label>Category</label>
+<select name="category"
+class="form-control editable" disabled>
+{% for key,value in category_choices %}
+<option value="{{ key }}"
+{% if site.category == key %}selected{% endif %}>
+{{ value }}
+</option>
+{% endfor %}
+</select>
+</div>
+
+<div class="form-group">
+<label>Total Sqft</label>
+<input type="number" name="total_sqft"
+value="{{ site.total_sqft }}"
+class="form-control editable" readonly>
+</div>
+
+<div class="form-group">
+<label>Building Area Sqft</label>
+<input type="number" name="building_area_sqft"
+value="{{ site.building_area_sqft }}"
+class="form-control editable" readonly>
+</div>
+
+<div class="form-group">
+<label>Approximate Budget</label>
+<input type="number" name="approximate_budget"
+value="{{ site.approximate_budget }}"
+class="form-control editable" readonly>
+</div>
+
+<div class="form-group">
+<label>Start Date</label>
+<input type="date" name="start_date"
+value="{{ site.start_date|date:'Y-m-d' }}"
+class="form-control editable" readonly>
+</div>
+
+<div class="form-group">
+<label>End Date</label>
+<input type="date" name="end_date"
+value="{{ site.end_date|date:'Y-m-d' }}"
+class="form-control editable" readonly>
+</div>
+
+<div class="form-group">
+<label>Status</label>
+<select name="status"
+class="form-control editable" disabled>
+{% for key,value in status_choices %}
+<option value="{{ key }}"
+{% if site.status == key %}selected{% endif %}>
+{{ value }}
+</option>
+{% endfor %}
+</select>
+</div>
+
+<div class="form-group">
+<label>Description</label>
+<textarea name="description"
+class="form-control editable"
+readonly>{{ site.description }}</textarea>
+</div>
+
+<div class="form-group">
+<label>Site Address</label>
+<textarea name="site_address"
+class="form-control editable"
+readonly>{{ site.site_address }}</textarea>
+</div>
+
+<div class="form-group">
+<label>District</label>
+<input type="text" name="site_district"
+value="{{ site.site_district }}"
+class="form-control editable" readonly>
+</div>
+
+
+
+
+
+</div>
+
+
+<!-- ================= RIGHT SIDE ================= -->
+<div>
+<br><br><br>
+
+<div class="form-group">
+<label>State</label>
+<input type="text" name="site_state"
+value="{{ site.site_state }}"
+class="form-control editable" readonly>
+</div>
+
+<div class="form-group">
+<label>Pincode</label>
+<input type="text" name="site_pincode"
+value="{{ site.site_pincode }}"
+class="form-control editable" readonly>
+</div>
+
+<div class="form-group">
+<label>Site Map</label>
+{% if site.site_map %}
+<a href="{{ site.site_map.url }}" target="_blank">
+View Uploaded Map
+</a>
+{% endif %}
+<input type="file" name="site_map"
+class="form-control editable" disabled>
+</div>
+
+<div class="form-group">
+<label>Blueprint File</label>
+{% if site.blueprint_file %}
+<a href="{{ site.blueprint_file.url }}" target="_blank">
+View Uploaded Blueprint
+</a>
+{% endif %}
+<input type="file" name="blueprint_file"
+class="form-control editable" disabled>
+</div>
+
+<div class="section-title">Owner Details</div>
+
+<div class="form-group">
+<label>Owner Name</label>
+<input type="text" name="owner_name"
+value="{{ owner.owner_name }}"
+class="form-control editable" readonly>
+</div>
+
+<div class="form-group">
+<label>Owner Gender</label>
+<select name="owner_gender"
+class="form-control editable" disabled>
+<option value="Male" {% if owner.owner_gender == "Male" %}selected{% endif %}>Male</option>
+<option value="Female" {% if owner.owner_gender == "Female" %}selected{% endif %}>Female</option>
+<option value="Other" {% if owner.owner_gender == "Other" %}selected{% endif %}>Other</option>
+</select>
+</div>
+
+<div class="form-group">
+<label>Owner Phone</label>
+<input type="text" name="owner_phone"
+value="{{ owner.owner_phone }}"
+class="form-control editable" readonly>
+</div>
+
+<div class="form-group">
+<label>Owner Address</label>
+<textarea name="owner_address"
+class="form-control editable"
+readonly>{{ owner.owner_address }}</textarea>
+</div>
+
+<div class="form-group">
+<label>Owner District</label>
+<input type="text" name="owner_district"
+value="{{ owner.owner_district }}"
+class="form-control editable" readonly>
+</div>
+
+<div class="form-group">
+<label>Owner Pincode</label>
+<input type="text" name="owner_pincode"
+value="{{ owner.owner_pincode }}"
+class="form-control editable" readonly>
+</div>
+
+</div>
+
+</div>
+<div class="action-buttons">
+<button type="button" id="editBtn" style="background-color: #ff7a18;"
+class="big-btn edit-btn">
+Edit
+</button>
+
+<button type="submit" id="saveBtn"
+class="big-btn save-btn"
+disabled>
+Save All
+</button>
+</div>
+
+</form>
+</div>
+
+<script>
+const editBtn = document.getElementById("editBtn");
+const saveBtn = document.getElementById("saveBtn");
+const fields = document.querySelectorAll(".editable");
+
+editBtn.addEventListener("click", function(){
+
+  fields.forEach(field => {
+    if(field.tagName === "SELECT"){
+      field.disabled = false;
+    } else {
+      field.removeAttribute("readonly");
+    }
+  });
+  
+
+  editBtn.disabled = true;
+  saveBtn.disabled = false;
+});
+
+function closeDetails(id){
+  document.getElementById("modal-"+id).style.display="none";
+}
+</script>
+
+{% endblock %}

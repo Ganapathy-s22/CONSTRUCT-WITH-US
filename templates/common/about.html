@@ -1,0 +1,148 @@
+{% extends 'common/base.html' %}
+{% load static %}
+
+{% block content %}
+
+<style>
+    body{
+        font-family: "Oswald", sans-serif;
+    }
+  /* ===== ABOUT PAGE STYLES ===== */
+  .about-wrapper {
+    padding: 70px 80px;
+    background: #f9fafb;
+  }
+
+  .about-title {
+    text-align: center;
+    font-size: 36px;
+    color: #0b1c2d;
+    margin-bottom: 15px;
+  }
+
+  .about-subtitle {
+    text-align: center;
+    font-size: 18px;
+    color: #555;
+    margin-bottom: 60px;
+  }
+
+  .about-section {
+    margin-bottom: 50px;
+  }
+
+  .about-section h3 {
+    font-size: 24px;
+    color: #ff7a18;
+    margin-bottom: 15px;
+  }
+
+  .about-section p {
+    font-size: 17px;
+    color: #333;
+    line-height: 1.8;
+  }
+
+  .about-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 30px;
+    margin-top: 30px;
+  }
+
+  .about-card {
+    background: #ffffff;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 8px 18px rgba(0,0,0,0.06);
+  }
+
+  .about-card h4 {
+    font-size: 20px;
+    color: #0b1c2d;
+    margin-bottom: 10px;
+  }
+
+  .about-card p {
+    font-size: 16px;
+    color: #555;
+    line-height: 1.7;
+  }
+
+  @media (max-width: 768px) {
+    .about-wrapper {
+      padding: 40px 25px;
+    }
+  }
+</style>
+
+<div class="about-wrapper">
+
+  <h1 class="about-title">About ConstructWithUs</h1>
+  <p class="about-subtitle">
+    A smart platform connecting engineers, suppliers, and administrators for efficient construction procurement
+  </p>
+
+  <!-- PROJECT OVERVIEW -->
+  <div class="about-section">
+    <h3>Project Overview</h3>
+    <p>
+      ConstructWithUs is a location-based construction material procurement platform designed to simplify
+      the process of sourcing construction materials.  
+      This system connects Engineers / Customers with verified Suppliers / Agencies, while Admins ensure
+      security, validation, and smooth workflow across the platform.
+    </p>
+  </div>
+
+  <!-- ROLE BASED DETAILS -->
+  <div class="about-section">
+    <h3>How the Platform Works</h3>
+
+    <div class="about-grid">
+
+      <!-- ENGINEER -->
+      <div class="about-card">
+        <h4>👷 Engineer / Customer</h4>
+        <p>
+          Engineers can register and raise material requests based on their project requirements.
+          They can search suppliers using location-based filters, compare quotations, and choose
+          the best supplier efficiently.
+        </p>
+      </div>
+
+      <!-- SUPPLIER -->
+      <div class="about-card">
+        <h4>🏭 Supplier / Agency</h4>
+        <p>
+          Suppliers can register their company, list available materials, and receive requests
+          from engineers. This helps suppliers expand their business reach and gain verified customers.
+        </p>
+      </div>
+
+      <!-- ADMIN -->
+      <div class="about-card">
+        <h4>🛡️ Admin</h4>
+        <p>
+          Admin plays a crucial role in managing the platform. Admin verifies suppliers,
+          monitors activities, ensures data authenticity, and maintains overall system security.
+        </p>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- WHY CHOOSE -->
+  <div class="about-section">
+    <h3>Why Choose ConstructWithUs?</h3>
+    <p>
+      ✔ Transparent procurement process  
+      ✔ Verified suppliers and agencies  
+      ✔ Location-based material availability  
+      ✔ Time-saving and cost-efficient solution  
+      ✔ Centralized admin control for reliability
+    </p>
+  </div>
+
+</div>
+
+{% endblock %}

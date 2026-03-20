@@ -1,0 +1,1113 @@
+{% extends "engineer_side/engineer_dashboard.html" %}
+{% load static %}
+{% block content %}
+
+
+<style>
+
+/* ===== WRAPPER ===== */
+.material-wrapper{
+  max-width:1400px;
+  margin:auto;
+}
+
+/* ===== SITE INFO BAR ===== */
+.site-info-bar{
+  background:#fff;
+  padding:20px 25px;
+  border-radius:10px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  margin-bottom:20px;
+}
+
+.site-info-bar h2{
+  margin-bottom:15px;
+  color:#ff7a18;
+}
+
+.site-info-left{
+  display:flex;
+  flex-wrap:wrap;
+  gap:11%;
+}
+
+.site-info-item{
+  display:flex;
+  flex-direction:column;
+}
+
+.site-info-label{
+  font-size:16px;
+  font-weight:600;
+  margin-bottom: 6px;
+  color:#ff7a18;
+  text-transform:uppercase;
+}
+
+.site-info-value{
+  font-weight:600;
+  font-size: 22px;
+  color:#0b1c2d;
+}
+
+.site-status-badge{
+  padding:6px 14px;
+  border-radius:20px;
+  text-align: center;
+  font-size:13px;
+  font-weight:600;
+  color:#fff;
+}
+
+.Planning{ background:#6c757d; }
+.Started{ background:#007bff; }
+.Ongoing{ background:#ff9800; }
+.NearComplete{ background:#9c27b0; }
+.Completed{ background:#28a745; }
+.HandedOver{ background:#20c997; }
+
+/* ===== MAIN TABS ===== */
+
+.material-tabs{
+  display:flex;
+  background:#ffffff;
+  border-radius:8px;
+  overflow:hidden;
+  box-shadow:0 4px 12px rgba(0,0,0,0.08);
+  margin-bottom:30px;
+}
+
+.material-tab{
+  flex:1;
+  text-align:center;
+  padding:14px 0;
+  text-decoration:none;
+  font-weight:600;
+  color:#0b1c2d;
+  border-right:1px solid #eee;
+  transition:0.3s;
+}
+
+.material-tab:last-child{
+  border-right:none;
+}
+
+.material-tab:hover:not(.active){
+  background:#0b1c2d;
+  color:#fff;
+}
+
+.material-tab.active{
+  background:#0b1c2d;
+  color:#fff;
+}
+
+
+/* ===== SEARCH BAR ===== */
+.search-section{
+  background:#fff;
+  padding:20px;
+  border-radius:10px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  margin-bottom:20px;
+}
+
+.search-row{
+  display:flex;
+  gap:1.2%;
+  align-items:center;
+  padding: 10px 200px;
+}
+
+.search-row input,
+.search-row select{
+  padding:10px 24px;
+  border:1px solid #ccc;
+  border-radius:6px;
+}
+
+.search-row button{
+  background:#0b1c2d;
+  color:#fff;
+  padding:10px 24px;
+  border:none;
+  border-radius:6px;
+  cursor:pointer;
+}
+
+/* ===== RECENT SEARCH ===== */
+.recent-search{
+  margin-top:15px;
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+}
+
+.recent-item{
+  background:#b0fcb5;
+  padding:6px 24px;
+  border-radius:2px;
+  font-size:14px;
+  display:flex;
+  align-items:center;
+  gap:16px;
+}
+
+.recent-item span{
+  cursor:pointer;
+  margin-left: 100px;
+  font-weight:bold;
+}
+
+/* ===== CATEGORY FILTER ===== */
+.product-category-tabs{
+  display:flex;
+  gap:15px;
+  margin:20px 0;
+}
+
+.product-category-tab{
+  padding:8px 16px;
+  border-radius:20px;
+  background:#e9ecef;
+  cursor:pointer;
+  font-weight:600;
+}
+
+.product-category-tab.active{
+  background:#ff7a18;
+  color:#fff;
+}
+
+/* ===== PRODUCT GRID ===== */
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 25px;
+  height: 45;
+}
+
+/* ===== PRODUCT CARD ===== */
+.product-card {
+  background: #ffffff;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 6px 15px rgba(0,0,0,0.08);
+  
+  transition: 0.3s;
+}
+
+.product-card:hover {
+  transform: translateY(-4px);
+}
+
+.product-image {
+  width: 100%;
+  height: 300px;
+  padding: 10px;
+  object-fit: cover;
+  border-bottom: 3px solid #ff7a18;
+}
+
+.product-body {
+  padding: 15px;
+}
+
+.product-name {
+  font-weight: 700;
+  margin-bottom: 5px;
+  color: #0b1c2d;
+}
+
+.product-type {
+  font-size: 14px;
+  color: #777;
+  margin-bottom: 12px;
+}
+
+.details-btn {
+  display: inline-block;
+  padding: 8px 12px;
+  background: #ff6a00;
+  margin-left: 33%;
+  color: #fff;
+  text-decoration: none;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.details-btn:hover {
+  background: #e65c00;
+}
+
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 999;
+  left: 0;
+  top: 0;
+  width: 100%;
+  max-width: 4800px;
+  height: 100%;
+  background: rgba(0,0,0,0.6);
+}
+
+.modal-content {
+  background: #fff;
+  margin: 5% auto;
+  padding: 25px;
+  width: 800px;
+  border-radius: 8px;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.close-btn {
+  float: right;
+  font-size: 22px;
+  cursor: pointer;
+}
+
+.variant-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 15px;
+}
+
+.variant-table th,
+.variant-table td {
+  border-bottom: 1px solid #ddd;
+  padding: 8px;
+  text-align: center;
+}
+
+.add-cart-btn{
+  margin-top:auto;
+  background:#007bff;
+  color:#fff;
+  border:none;
+  padding:8px;
+  border-radius:6px;
+  cursor:pointer;
+}
+
+.add-cart-btn:hover{
+  opacity:0.9;
+}
+
+
+/* ===== HORIZONTAL TABS ===== */
+.category-tabs {
+  display: flex;
+  background: #ffffff;
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 30px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+}
+
+.category-tab {
+  flex: 1;
+  text-align: center;
+  padding: 14px 0;
+  text-decoration: none;
+  font-weight: 600;
+  color: #0b1c2d;
+  border-right: 1px solid #eee;
+  transition: 0.3s;
+}
+
+.category-tab:last-child {
+  border-right: none;
+}
+
+.category-tab:hover {
+  background: #f4f6f9;
+}
+
+.category-tab.active {
+  background: #0b1c2d;
+  color: #fff;
+}
+
+.variant-table th,
+.variant-table td{
+  padding:14px;
+  text-align:center;
+}
+
+.add-cart-btn{
+  background:#28a745;
+  color:#fff;
+  border:none;
+  padding:6px 10px;
+  border-radius:5px;
+  cursor:pointer;
+}
+
+.add-cart-btn:hover{
+  opacity:0.9;
+}
+
+/* ===== SEARCH MODE TABS ===== */
+.search-mode-tabs{
+  display:flex;
+  background:#fff;
+  border-radius:8px;
+  overflow:hidden;
+  margin-bottom:25px;
+  box-shadow:0 4px 12px rgba(0,0,0,0.08);
+}
+
+.search-mode-tab{
+  flex:1;
+  text-align:center;
+  padding:14px;
+  font-weight:600;
+  text-decoration: none;
+  cursor:pointer;
+  transition:0.3s;
+}
+
+.search-mode-tab.active{
+  background:#0b1c2d;
+  color:#fff;
+}
+
+.search-mode-tab:hover:not(.active){
+  background:#f4f6f9;
+}
+
+/* ===== AGENCY GRID ===== */
+/* ===== AGENCY GRID ===== */
+.agency-grid{
+  display:grid;
+  max-width: 1400px;
+  grid-template-columns:repeat(2, 1fr);
+  gap:25px;
+}
+
+.agency-card{
+  background:#fff;
+  padding:22px;
+  border-radius:10px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
+}
+
+.agency-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:15px;
+}
+
+.agency-header h3{
+  margin:0;
+  font-size:20px;
+  color:#0b1c2d;
+}
+
+.agency-status{
+  padding:6px 14px;
+  border-radius:20px;
+  font-size:12px;
+  font-weight:600;
+  color:#fff;
+}
+
+.agency-status.approved{
+  background:#28a745;
+}
+
+.agency-body p{
+  margin:6px 0;
+  font-size:14px;
+  color:#444;
+}
+
+.agency-footer{
+  margin-top:15px;
+  text-align:right;
+}
+
+.view-products-btn{
+  background:#0b1c2d;
+  color:#fff;
+  padding:8px 16px;
+  border-radius:6px;
+  text-decoration:none;
+  font-size:14px;
+  transition:0.3s;
+}
+
+.view-products-btn:hover{
+  background:#ff7a18;
+}
+
+
+.qty-input{
+  width:60px;
+  padding:4px;
+  text-align:center;
+}
+
+.add-cart-btn{
+  background:#28a745;
+  color:white;
+  border:none;
+  padding:6px 12px;
+  border-radius:5px;
+  cursor:pointer;
+}
+
+.add-cart-btn:hover{
+  background:#218838;
+}
+
+.qty-wrapper{
+  display:flex;
+  align-items:center;
+  gap:5px;
+}
+
+.qty-input{
+  width:50px;
+  text-align:center;
+  padding:4px;
+  border:1px solid #ccc;
+  border-radius:4px;
+}
+
+.qty-btn{
+  width:28px;
+  height:28px;
+  border:none;
+  background:#0f2b46;
+  color:white;
+  font-weight:bold;
+  border-radius:4px;
+  cursor:pointer;
+  transition:0.2s;
+}
+
+.qty-btn:hover{
+  background:#1e4d7a;
+}
+
+.cart-form{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+}
+
+
+/* ===== AGENCIES SECTION ===== */
+
+#agenciesSection{
+  margin-top:25px;
+}
+
+/* ===== GRID ===== */
+
+.agency-grid{
+  display:grid;
+  grid-template-columns:repeat(3, 1fr);
+  gap:25px;
+}
+
+/* ===== CARD ===== */
+
+.agency-card{
+  background:#ffffff;
+  padding:22px;
+  border-radius:10px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
+  transition:0.3s;
+}
+
+.agency-card:hover{
+  transform:translateY(-5px);
+  box-shadow:0 10px 25px rgba(0,0,0,0.12);
+}
+
+/* ===== HEADER ===== */
+
+.agency-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:12px;
+}
+
+.agency-header h3{
+  margin:0;
+  font-size:18px;
+  color:#0b1c2d;
+}
+
+/* ===== STATUS BADGE ===== */
+
+.agency-status{
+  padding:5px 12px;
+  border-radius:20px;
+  font-size:12px;
+  font-weight:600;
+  color:#fff;
+}
+
+.agency-status.approved{
+  background:#28a745;
+}
+
+/* ===== BODY ===== */
+
+.agency-body p{
+  margin:6px 0;
+  font-size:14px;
+  color:#444;
+}
+
+/* ===== FOOTER ===== */
+
+.agency-footer{
+  margin-top:15px;
+  text-align:right;
+}
+
+.view-products-btn{
+  background:#0b1c2d;
+  color:#fff;
+  padding:8px 16px;
+  border-radius:6px;
+  text-decoration:none;
+  font-size:14px;
+  transition:0.3s;
+}
+
+.view-products-btn:hover{
+  background:#ff7a18;
+}
+
+.agency-filter-bar{
+display:flex;
+justify-content:space-between;
+align-items:center;
+background:#f1f3f5;
+padding:10px 16px;
+border-radius:6px;
+margin-bottom:15px;
+font-size:15px;
+font-weight:600;
+}
+
+.close-filter{
+font-size:18px;
+color:#ff4d4d;
+cursor:pointer;
+}
+
+.close-filter:hover{
+color:#cc0000;
+}
+
+.alert-success{
+  background:#e6ffed;
+  color:#0f5132;
+  padding:12px;
+  border-radius:8px;
+  margin-bottom:20px;
+}
+</style>
+
+<!-- ===== SITE INFO BAR ===== -->
+<div class="site-info-bar">
+  
+
+  <div class="site-info-left">
+
+    <h2>Site Details</h2>
+    <div class="site-info-item">
+      <div class="site-info-label">Site Name</div>
+      <div class="site-info-value">{{ site.site_name }}</div>
+    </div>
+
+    <div class="site-info-item">
+      <div class="site-info-label">Project Status</div>
+      <div class="site-status-badge {{ site.status }}">
+        {{ site.get_status_display }}
+      </div>
+    </div>
+
+    <div class="site-info-item">
+      <div class="site-info-label">Address</div>
+      <div class="site-info-value">{{ site.site_address }}</div>
+    </div>
+
+    <div class="site-info-item">
+      <div class="site-info-label">District</div>
+      <div class="site-info-value">{{ site.site_district }}</div>
+    </div>
+
+    <div class="site-info-item">
+      <div class="site-info-label">Pincode</div>
+      <div class="site-info-value">{{ site.site_pincode }}</div>
+    </div>
+
+  </div>
+</div>
+
+<div class="material-wrapper">
+<!-- ===== PRODUCT CATEGORY TABS ===== -->
+<div class="material-tabs">
+
+  <a href="{% url 'search_products' site.id %}"
+     class="material-tab {% if active_tab == 'search' %}active{% endif %}">
+     Search Products
+  </a>
+
+  <a href="{% url 'view_cart' site.id %}"
+     class="material-tab {% if active_tab == 'cart' %}active{% endif %}">
+     Add to Cart
+  </a>
+
+  <a href="{% url 'manage_quotations_orders' site.id %}"
+     class="material-tab {% if active_tab == 'quotation' %}active{% endif %}">
+     Quotation & Order Requests
+  </a>
+
+  <a href="{% url 'confirmed_orders' site.id %}"
+     class="material-tab {% if active_tab == 'orders' %}active{% endif %}">
+     Confirmed Orders
+  </a>
+
+</div>
+
+
+<!-- ===== SEARCH SECTION ===== -->
+<form method="GET" class="search-section">
+
+  <div class="search-row">
+
+    <!-- 🔍 Product Search -->
+    <input type="text"
+           name="q"
+           value="{{ query|default:'' }}"
+           placeholder="Search product name..."
+           style="flex:2; padding:14px; font-size:16px;">
+
+    <!-- 📍 District (Fixed) -->
+    <input type="text"
+           value="{{ site.site_district }}(fixed)"
+           readonly
+           style="padding:14px; background:#e8e6e6;">
+
+    <input type="hidden"
+           name="district"
+           value="{{ site.site_district }}">
+
+    <!-- 📌 Pincode (Editable) -->
+    <input type="text"
+           name="pincode"
+           value="{{ pincode|default:site.site_pincode }}"
+           placeholder="Enter pincode"
+           maxlength="6"
+           pattern="[0-9]{6}"
+           style="padding:14px;">
+
+    <button type="submit"
+            style="padding:14px 30px; font-size:15px;">
+      Search
+    </button>
+
+  </div>
+
+</form>
+
+               {% if messages %}
+    {% for message in messages %}
+      <div class="alert-success">
+        {{ message }}
+      </div>
+    {% endfor %}
+  {% endif %}
+<!-- ===== SEARCH MODE TABS ===== -->
+<div class="search-mode-tabs">
+
+  <div class="search-mode-tab active" id="productsTab"
+       onclick="showProducts()">
+       🧱 Products
+  </div>
+
+  <div class="search-mode-tab" id="agenciesTab"
+       onclick="showAgencies()">
+       🏢 Agencies
+  </div><br>
+</div>
+{% if agency_name %}
+<div class="agency-filter-bar">
+
+<span>
+🏢 <b>{{ agency_name }}</b> products
+</span>
+
+<span class="close-filter"
+onclick="removeAgencyFilter()">
+✕
+</span>
+
+</div>
+{% endif %}
+
+
+<div id="productsSection">
+<h4 style="color:#e65c00;font-size: 24px;">Product Types</h4><br>
+<div class="category-tabs">
+  <a href="?type=all{% if agency_name %}&agency={{ agency_name }}{% endif %}"
+     class="category-tab {% if active_type == 'all' %}active{% endif %}">
+     All
+  </a>
+
+  <a href="?type=cement{% if agency_name %}&agency={{ agency_name }}{% endif %}"
+     class="category-tab {% if active_type == 'cement' %}active{% endif %}">
+     Cement
+  </a>
+
+  <a href="?type=steel{% if agency_name %}&agency={{ agency_name }}{% endif %}"
+     class="category-tab {% if active_type == 'steel' %}active{% endif %}">
+     Steel
+  </a>
+
+  <a href="?type=bricks{% if agency_name %}&agency={{ agency_name }}{% endif %}"
+     class="category-tab {% if active_type == 'bricks' %}active{% endif %}">
+     Bricks
+  </a>
+
+  <a href="?type=others{% if agency_name %}&agency={{ agency_name }}{% endif %}"
+     class="category-tab {% if active_type == 'others' %}active{% endif %}">
+     Others
+  </a>
+</div>
+
+<!-- ===== PRODUCT CARDS ===== -->
+<div class="product-grid">
+
+{% for product in products %}
+
+  <div class="product-card">
+
+    {% if product.image %}
+      <img src="{{ product.image.url }}" class="product-image">
+    {% else %}
+      <img src="{% static 'images/no-image.png' %}" class="product-image">
+    {% endif %}
+
+    <div class="product-body">
+
+      <div class="product-name"> 
+        {{ product.product_name }}
+      </div>
+
+      <div class="product-type">
+        {{ product.get_product_type_display }}
+      </div>
+
+      <div class="product-agency" style="font-size:14px;color:#464444;">
+ Agency: {{ product.agency.company_name }}
+</div><br>
+
+      <div class="product-stock" style="color:#024a13; font-size: 16px;">
+        Stock Available: {{ product.total_stock|default:0 }}</div>
+        
+      <div style="font-size:14px; color:#555;">
+         {% if product.variants.count > 0 %}
+  Variants: {{ product.variants.count }}
+{% else %}
+  No Variants Available
+{% endif %}
+</div><br>
+
+      <button class="details-btn"
+        onclick="openModal(
+          '{{ product.product_name }}',
+          '{{ product.get_product_type_display }}',
+          '{{ product.agency.company_name}}',
+          
+          [
+            {% for v in product.variants.all %}
+              {
+                id: '{{ v.id }}',
+                name: '{{ v.spc_product_name|escapejs }}',
+                size: '{{ v.size_or_weight }}',
+                price: '{{ v.price }}',
+                stock: '{{ v.stock }}'
+              },
+            {% endfor %}
+          ]
+            )">
+         view Variants 
+        </button><br><br>
+        <p style="color:#946e06; font-size: small;"> Open "View Details" Select Your Variant And Quantity As Your Needs From Inside.</p>
+    </div></div>
+   
+  <!-- ===== PRODUCT MODAL ===== -->
+{% empty %}
+  <p>No products available.</p>
+{% endfor %}
+
+</div>
+
+<div id="productModal" class="modal">
+  <div class="modal-content">
+    <span class="close-btn" onclick="closeModal()">&times;</span>
+   
+    <h2 id="modalProductName"></h2>
+    <p id="modalProductType"></p>
+    <p id="modalAgencyName"></p><br>
+
+    <h4>Variants:</h4>
+    <table class="variant-table">
+      <thead>
+        <tr>
+          <th> Product Variant Name</th>
+          <th>Average Price</th>
+          <th>Total Stock</th>
+          <th>Quantity </th>
+          <th>select quantity</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody id="variantTableBody">
+      </tbody>
+    </table><br><br><br>
+    <h4 style="color:#218838; font-size: small;">Select the Quantity , If you click the Add to Cart button Automatically Moved to the "Add To Cart" Tab,and Variants Table Will Close, you can Add Quantity by click the View Variants Button  </h4>
+  </div>
+</div>
+
+</div></div>
+<!-- ===== AGENCIES LIST ===== -->
+<div id="agenciesSection" style="display:none;">
+
+<h4 style="color:#e65c00;font-size:24px;">Available Agencies in {{ site.site_district }}</h4>
+
+<div class="agency-grid">
+
+{% for agency in agencies %}
+
+<div class="agency-card">
+
+  <div class="agency-header">
+    <h3>{{ agency.company_name }}</h3>
+    <span class="agency-status approved">Approved</span>
+  </div>
+
+  <div class="agency-body">
+    <p><b>Products With Variant:</b> {{ agency.products.count }}</p>
+    <p><b>Owner:</b> {{ agency.owner_name }}</p>
+    <p><b>Address :</b>{{ agency.company_address}}</p>
+    <p><b>District:</b> {{ agency.company_district }}</p>
+    <p><b>Pincode:</b> {{ agency.company_pincode }}</p>
+
+  </div>
+
+  <a href="#"
+class="view-products-btn"
+onclick="viewAgencyProducts('{{ agency.company_name|escapejs }}')">
+View Products
+</a>
+
+</div>
+
+{% empty %}
+
+<p>No agencies available in this district : {{ site.site_district }}.</p>
+
+{% endfor %}
+
+</div>
+<script>
+  function openModal(name, type, agency, variants) {
+
+  document.getElementById("modalProductName").innerText =
+      "Product Name : " + name;
+
+  document.getElementById("modalProductType").innerText =
+      "Product Type : " + type;
+
+  document.getElementById("modalAgencyName").innerText =
+      "Agency Name : " + agency;
+
+  let tableBody = document.getElementById("variantTableBody");
+  tableBody.innerHTML = "";
+
+  
+
+variants.forEach(v => {
+  tableBody.innerHTML += `
+    <tr>
+      <td>${v.name}</td>
+      
+      <td>₹ ${v.price}</td>
+      <td>${v.stock}</td>
+      <td>${v.size}</td>
+
+    <td colspan="2">
+    <form method="POST"
+        action="/site/{{ site.id }}/add-to-cart/${v.id}/"
+      class="cart-form">
+     {% csrf_token %}
+    <input type="hidden" id="globalCsrfToken" value="{{ csrf_token }}">
+    <div class="qty-wrapper">
+
+      <button type="button"
+              class="qty-btn"
+              onclick="decreaseQty(this)">
+        -
+      </button>
+
+      <input type="number"
+             name="quantity"
+             class="qty-input"
+             min="1"
+             max="${v.stock}"
+             value="1"
+             required>
+
+      <button type="button"
+              class="qty-btn"
+              onclick="increaseQty(this, ${v.stock})">
+        +
+      </button>
+
+    </div>
+   
+    <button type="submit"
+            class="add-cart-btn">
+      Add to Cart
+    </button>
+  </form>
+</td>
+
+
+    </tr>
+  `;
+});
+
+  document.getElementById("productModal").style.display = "flex";
+}
+
+function closeModal() {
+  document.getElementById("productModal").style.display = "none";
+}
+
+// close when clicking outside modal content
+window.onclick = function(e) {
+  const modal = document.getElementById("productModal");
+  if (e.target === modal) {
+    modal.style.display = "none";
+  }
+}
+
+function addToCart(variantName){
+  alert(variantName + " added to cart ✅");
+}
+
+function increaseQty(button, maxStock){
+  const input = button.parentElement.querySelector(".qty-input");
+  let current = parseInt(input.value);
+
+  if(current < maxStock){
+    input.value = current + 1;
+  }
+}
+
+function decreaseQty(button){
+  const input = button.parentElement.querySelector(".qty-input");
+  let current = parseInt(input.value);
+
+  if(current > 1){
+    input.value = current - 1;
+  }
+}
+
+</script>
+
+<script>
+  function showProducts(){
+
+  document.getElementById("productsSection").style.display="block";
+  document.getElementById("agenciesSection").style.display="none";
+
+  document.getElementById("productsTab").classList.add("active");
+  document.getElementById("agenciesTab").classList.remove("active");
+}
+
+function showAgencies(){
+
+  document.getElementById("productsSection").style.display="none";
+  document.getElementById("agenciesSection").style.display="block";
+
+  document.getElementById("agenciesTab").classList.add("active");
+  document.getElementById("productsTab").classList.remove("active");
+}
+</script>
+<script>
+
+function viewAgencyProducts(agencyName){
+
+// current url
+const url = new URL(window.location.href);
+
+// agency filter set
+url.searchParams.set("agency", agencyName);
+
+// open products tab automatically
+url.searchParams.set("tab","products");
+
+// reload page
+window.location.href = url.toString();
+
+}
+
+
+
+function removeAgencyFilter(){
+
+const url = new URL(window.location.href);
+
+// remove agency filter
+url.searchParams.delete("agency");
+
+// reload page
+window.location.href = url.pathname;
+
+}
+
+
+
+document.addEventListener("DOMContentLoaded", function(){
+
+const params = new URLSearchParams(window.location.search);
+
+// if agency filter active → open products tab
+if(params.get("agency")){
+
+document.getElementById("productsSection").style.display="block";
+document.getElementById("agenciesSection").style.display="none";
+
+document.getElementById("productsTab").classList.add("active");
+document.getElementById("agenciesTab").classList.remove("active");
+
+}
+
+});
+</script>
+
+
+
+{% endblock %}

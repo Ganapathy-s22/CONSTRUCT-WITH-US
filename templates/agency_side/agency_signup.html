@@ -1,0 +1,347 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Agency Signup</title>
+  <link rel="stylesheet" href="{% static 'css/users/signup_agency.css' %}">
+</head>
+<body>
+
+<div class="signup-wrapper">
+
+  <h2>Supplier / Agency Signup</h2>
+  <p class="subtitle">Register your company to grow your business</p>
+
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+
+    <div class="form-grid">
+
+      <!-- LEFT -->
+      <div class="left-form">
+
+        <!-- USER DETAILS -->
+        <div class="form-section">
+          <h3>User Details</h3>
+
+          <label>Username</label>
+          <input type="text" name="username" id="username" value="{{old.username|default:''}}" required>
+          <small class="live-msg" id="usernameMsg"></small>
+
+          <label>Email</label>
+          <input type="email" name="email" id="email" value="{{old.email|default:''}}" required>
+          <small class="live-msg" id="emailMsg"></small>
+
+          <label>Password</label>
+          <div class="password-box">
+            <input type="password" id="password" name="password" required>
+            <span onclick="togglePassword('password', this)">Show</span>
+          </div>
+
+          <label>Re-Enter Password</label>
+          <div class="password-box">
+            <input type="password" id="confirmPassword" name="confirm_password" required>
+            <span onclick="togglePassword('confirmPassword', this)">Show</span>
+          </div>
+        </div>
+
+        <!-- COMPANY DETAILS -->
+        <div class="form-section">
+          <h3>Company Details</h3>
+
+          <label>Company FullName</label>
+          <input type="text" name="company_name" id="company_name" value="{{old.company_name|default:''}}"placeholder="company_name">
+
+          <label>Company GST Number</label>
+          <input type="text"
+          name="gst_number"
+          id="gst_number"
+          maxlength="15"
+          pattern="[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}"
+          title="Enter valid GST number"
+          required>
+          <small class="live-msg" id="gstMsg"></small>
+
+          <label>Re-Enter GST Number</label>
+          <input type="text" name="confirm_gst" required>
+
+          <label>GST Registration Certificate (Max 10MB)</label>
+          <input type="file"
+                 name="gst_certificate"
+                 accept=".pdf,.jpg,.png"
+                 required>
+
+          <label>Company Phone</label>
+          <input type="text" name="company_phone" id="company_phone" value="{{old.company_phone|default:''}}"required>
+          <small class="live-msg" id="phoneMsg"></small>
+
+          <label>Company State</label>
+          <select id="company_state" name="company_state" onchange="loadDistricts()">
+          <option value="">Select State</option>
+          <option value="TN">Tamil Nadu</option>
+          <option value="KL">Kerala</option>
+          </select> 
+
+          <label>Company District</label>
+          <select id="company_district" name="company_district" required>
+          <option value="">Select District</option>
+          </select>
+
+          <label>Company Address</label>
+          <textarea name="company_address" required>{{old.owner_name|default:''}}</textarea>
+
+          <label>Company Pincode</label>
+          <input type="text" name="company_pincode" value="{{old.company_pincode|default:''}}"required>
+        </div>
+
+      </div>
+
+      <!-- RIGHT -->
+      <div class="right-form">
+
+        <!-- OWNER DETAILS -->
+        <div class="form-section">
+          <h3>Owner Details</h3>
+
+          <label>Owner Name</label>
+          <input type="text" name="owner_name" value="{{old.owner_name|default:''}}"required>
+
+          <label>Owner Email</label>
+          <input type="email" name="owner_email" value="{{old.owner_email|default:''}}"required>
+
+          <label>Owner Phone</label>
+          <input type="text" name="owner_phone" id="owner_phone" value="{{old.owner_phone|default:''}}"required>
+          <small class="live-msg" id="ownerPhoneMsg"></small>
+
+          <label>Gender :</label>
+          <select name="gender" value="{{old.gender|default:''}}" required>
+            <option value="">Select Gender</option>
+            <option>Male</option>
+            <option>Female</option>
+            <option>Other</option>
+          </select>
+
+          <label>Age</label>
+          <input type="number" name="owner_age"value="{{old.owner_age|default:''}}" min="18" required>
+
+          <label>Date of Birth</label>
+          <input type="date" name="owner_dob" value="{{old.owner_dob|default:''}}"required>
+
+          <label>Address</label>
+          <textarea name="owner_address"  required>{{old.owner_name|default:''}}</textarea>
+
+          <label>District</label>
+          <select id="company_district" name="owner_district" required>
+    <option value="">Select District</option>      
+    <option value="ARIYALUR">Ariyalur</option>
+    <option value="CHENGALPATTU">Chengalpattu</option>
+    <option value="CHENNAI">Chennai</option>
+    <option value="COIMBATORE">Coimbatore</option>
+    <option value="CUDDALORE">Cuddalore</option>
+    <option value="DHARMAPURI">Dharmapuri</option>
+    <option value="DINDIGUL">Dindigul</option>
+    <option value="ERODE">Erode</option>
+    <option value="KALLAKURICHI">Kallakurichi</option>
+    <option value="KANCHIPURAM">Kanchipuram</option>
+    <option value="KANYAKUMARI">Kanyakumari</option>
+    <option value="KARUR">Karur</option>
+    <option value="KRISHNAGIRI">Krishnagiri</option>
+    <option value="MADURAI">Madurai</option>
+    <option value="MAYILADUTHURAI">Mayiladuthurai</option>
+    <option value="NAGAPATTINAM">Nagapattinam</option>
+    <option value="NAMAKKAL">Namakkal</option>
+    <option value="NILGIRIS">Nilgiris</option>
+    <option value="PERAMBALUR">Perambalur</option>
+    <option value="PUDUKKOTTAI">Pudukottai</option>
+    <option value="RAMANATHAPURAM">Ramanathapuram</option>
+    <option value="RANIPET">Ranipet</option>
+    <option value="SALEM">Salem</option>
+    <option value="SIVAGANGA">Sivaganga</option>
+    <option value="TENKASI">Tenkasi</option>
+    <option value="THANJAVUR">Thanjavur</option>
+    <option value="THENI">Theni</option>
+    <option value="THOOTHUKUDI">Thoothukudi</option>
+    <option value="TIRUCHIRAPPALLI">Tiruchirappalli</option>
+    <option value="TIRUNELVELI">Tirunelveli</option>
+    <option value="TIRUPATTUR">Tirupattur</option>
+    <option value="TIRUPPUR">Tiruppur</option>
+    <option value="TIRUVALLUR">Tiruvallur</option>
+    <option value="TIRUVANNAMALAI">Tiruvannamalai</option>
+    <option value="TIRUVARUR">Tiruvarur</option>
+    <option value="VELLORE">Vellore</option>
+    <option value="VILLUPURAM">Villupuram</option>
+    <option value="VIRUDHUNAGAR">Virudhunagar</option>
+
+  </select>
+
+          <label>State</label>
+          <input type="text" name="owner_state" value="{{old.owner_state|default:''}}"required>
+
+          <label>Pincode</label>
+          <input type="text" name="owner_pincode" value="{{old.owner_pincode|default:''}}"required>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- TERMS -->
+    <div class="terms">
+      <label class="terms-inline">
+        <input type="checkbox" id="termsCheck" name="terms_accepted" required>
+        <span class="terms-text">
+          I understood the terms and conditions *
+          <span class="read-more" onclick="openTerms()">Read more</span>
+        </span>
+      </label>
+    </div>
+
+    <button type="submit" class="signup-btn">Sign Up</button>
+
+  </form>
+</div>
+
+<!-- TERMS MODAL -->
+<div class="terms-modal" id="termsModal">
+  <div class="terms-box">
+    <h3>Terms & Conditions</h3>
+    <p>
+      1. Only genuine suppliers and agencies are allowed.<br><br>
+      2. GST and company details must be valid.<br><br>
+      3. Account will be reviewed by admin.<br><br>
+      4. Any misuse leads to suspension.
+    </p>
+    <button class="close-btn" onclick="closeTerms()">Close</button>
+  </div>
+</div>
+
+<script>
+function togglePassword(id, el) {
+  const f = document.getElementById(id);
+  f.type = f.type === "password" ? "text" : "password";
+  el.innerText = f.type === "password" ? "Show" : "Hide";
+}
+
+function openTerms() {
+  document.getElementById("termsModal").style.display = "flex";
+  document.body.style.overflow = "hidden";
+}
+
+function closeTerms() {
+  document.getElementById("termsModal").style.display = "none";
+  document.body.style.overflow = "auto";
+}
+</script>
+
+<script>
+function checkField(url, fieldName, value, msgId) {
+  const msgBox = document.getElementById(msgId);
+
+  if (value.length < 3) {
+    msgBox.innerText = "";
+    msgBox.className = "live-msg";
+    return;
+  }
+
+  fetch(`${url}?${fieldName}=${value}`)
+    .then(res => res.json())
+    .then(data => {
+      if (data.exists) {
+        msgBox.innerText = `${fieldName} already exists`;
+        msgBox.className = "live-msg error";
+      } else {
+        msgBox.innerText = `${fieldName} available`;
+        msgBox.className = "live-msg success";
+      }
+    })
+    .catch(() => {
+      msgBox.innerText = "Server error";
+      msgBox.className = "live-msg error";
+    });
+}
+
+document.getElementById("username").addEventListener("keyup", function () {
+  checkField("/check-username/", "username", this.value, "usernameMsg");
+});
+
+document.getElementById("email").addEventListener("keyup", function () {
+  checkField("/check-email/", "email", this.value, "emailMsg");
+});
+
+document.getElementById("company_phone").addEventListener("keyup", function () {
+  checkField("/check-company-phone/", "phone", this.value, "phoneMsg");
+});
+
+document.getElementById("owner_phone").addEventListener("keyup", function () {
+  checkField("/check-owner-phone/", "phone", this.value, "ownerPhoneMsg");
+});
+
+document.getElementById("gst_number").addEventListener("keyup", function () {
+  checkField("/check-gst/", "gst", this.value, "gstMsg");
+});
+</script>
+
+<script>
+const data = {
+  TN: ["Ariyalur",
+"Chengalpattu",
+"Chennai",
+"Coimbatore",
+"Cuddalore",
+"Dharmapuri",
+"Dindigul",
+"Erode",
+"Kallakurichi",
+"Kanchipuram",
+"Kanyakumari",
+"Karur",
+"Krishnagiri",
+"Madurai",
+"Mayiladuthurai",
+"Nagapattinam",
+"Namakkal",
+"Nilgiris",
+"Perambalur",
+"Pudukkottai",
+"Ramanathapuram",
+"Ranipet",
+"Salem",
+"Sivaganga",
+"Tenkasi",
+"Thanjavur",
+"Theni",
+"Thoothukudi",
+"Tiruchirappalli",
+"Tirunelveli",
+"Tirupathur",
+"Tiruppur",
+"Tiruvallur",
+"Tiruvannamalai",
+"Tiruvarur",
+"Vellore",
+"Viluppuram",
+"Virudhunagar"
+],
+  KL: ["Kochi", "Kozhikode"]
+};
+
+function loadDistricts() {
+  const state = document.getElementById("company_state").value;
+  const district = document.getElementById("company_district");
+
+  district.innerHTML = '<option value="">Select District</option>';
+
+  if (!state) return;
+
+  data[state].forEach(d => {
+    let opt = document.createElement("option");
+    opt.value = d;
+    opt.textContent = d;
+    district.appendChild(opt);
+  });
+}
+</script>
+
+
+</body>
+</html>

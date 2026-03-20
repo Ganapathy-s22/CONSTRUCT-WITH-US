@@ -1,0 +1,347 @@
+{% extends "engineer_side/engineer_dashboard.html" %}
+{% load static %}
+{% block content %}
+
+<style>
+
+/* SAME WRAPPER + TABS KEEP AS IT IS */
+.site-wrapper{
+  max-width:1100px;
+  margin:auto;
+}
+
+.wrapper{
+  max-width:1100px;
+  margin:auto;
+}
+
+/* ===== TOP TABS ===== */
+.site-tabs{
+  display:flex;
+  background:#ffffff;
+  border-radius:8px;
+  overflow:hidden;
+  box-shadow:0 4px 12px rgba(0,0,0,0.08);
+  margin-bottom:30px;
+}
+
+.site-tab{
+  flex:1;
+  text-align:center;
+  padding:14px 0;
+  text-decoration:none;
+  font-weight:600;
+  color:#0b1c2d;
+  border-right:1px solid #eee;
+  transition:0.3s;
+}
+
+.site-tab:last-child{
+  border-right:none;
+}
+
+.site-tab:hover:not(.active){
+  background:#0b1c2d;
+  color:#fff;
+}
+
+.site-tab.active{
+  background:#0b1c2d;
+  color:#fff;
+}
+
+/* ===== RIGHT SIDE BUTTONS ===== */
+.action-buttons{
+  display:flex;
+  gap:10px;
+}
+
+.action-btn{
+  padding:8px 14px;
+  border:none;
+  border-radius:2px;
+  text-decoration: none;
+  font-size:14px;
+  cursor:pointer;
+  color:#fff;
+  font-weight:600;
+}
+
+.details-btn{ background:#053f7e; }
+.edit-btn{ background:orange;color:black; }
+.delete-btn{ background:#dc3545; }
+
+.action-btn:hover{
+  opacity:0.85;
+}
+
+/* ===== MODAL ===== */
+.modal-overlay{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.6);
+  display:none;
+  justify-content:center;
+  align-items:center;
+  z-index:9999;
+}
+
+.modal-box{
+  background:#fff;
+  width:800px;
+  max-height:85vh;
+  overflow-y:auto;
+  padding:30px;
+  border-radius:10px;
+  position:relative;
+}
+
+.modal-close{
+  position:absolute;
+  top:15px;
+  right:20px;
+  font-size:22px;
+  cursor:pointer;
+  font-weight:700;
+}
+
+.modal-title{
+  font-size:22px;
+  font-weight:700;
+  margin-bottom:20px;
+  color:#f08f07;
+}
+
+.detail-group{
+  margin-bottom:12px;
+}
+
+.detail-label{
+  font-weight:600;
+  font-size:14px;
+  color:#555;
+}
+
+.detail-value{
+  font-size:15px;
+  background:#f4f6f9;
+  padding:8px 10px;
+  border-radius:6px;
+  margin-top:3px;
+}
+
+
+/* ===== SITE ROW ===== */
+.site-row{
+  background:#ffffff;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:30px 20px;
+  border-radius:10px;
+  box-shadow:8px 12px 16px rgba(1, 9, 62, 0.08);
+  margin-bottom:15px;
+  transition:0.3s;
+}
+
+.site-row:hover{
+  transform:translateY(-2px);
+}
+
+.site-left{
+  display:flex;
+  align-items:center;
+  gap:20px;
+}
+
+.site-name{
+  font-weight:700;
+  font-size:22px;
+}
+
+.site-category{
+  font-size:16px;
+  font-weight: 600;
+  color:#e50808;
+}
+
+.badge{
+  padding:5px 14px;
+  border-radius:20px;
+  font-size:14px;
+  color:#fff;
+}
+
+/* Status Colors */
+.Planning{ background:#6c757d; }
+.Started{ background:#007bff; }
+.Ongoing{ background:#ff9800; }
+.NearComplete{ background:#9c27b0; }
+.Completed{ background:#28a745; }
+.HandedOver{ background:#20c997; }
+
+</style>
+<div class="site-wrapper">
+
+  <!-- ===== TOP TABS ===== -->
+  <div class="site-tabs">
+    <a href="{% url 'create_site' %}" 
+       class="site-tab {% if active_tab == 'create' %}active{% endif %}">
+       Create New Site
+    </a>
+
+    <a href="{% url 'edit_delete_site' %}" 
+       class="site-tab {% if active_tab == 'edit' %}active{% endif %}">
+       Edit & Delete Site
+    </a>
+  </div>
+
+<div class="wrapper">
+    {% if messages %}
+  {% for message in messages %}
+    <div style="color:green;font-weight:600;margin-bottom:15px;">
+      {{ message }}
+    </div>
+  {% endfor %}
+{% endif %}
+<h4>----- SiteName --------- Category ------- Status ------------------------------------------------------------------------------------------------------------------ Actions ---------------</h4>
+{% for site in sites %}
+<div class="site-row">
+
+  <div class="site-left">
+    <div class="site-name">{{ site.site_name }}</div>
+    <div class="site-category">{{ site.get_category_display }}</div>
+    <div class="badge {{ site.status }}">
+      {{ site.get_status_display }}
+    </div>
+  </div>
+
+  <!-- RIGHT SIDE BUTTONS -->
+  <div class="action-buttons">
+
+    <button class="action-btn details-btn"
+            onclick="openDetails({{ site.id }})">
+      Details
+    </button>
+
+    <button class="action-btn edit-btn">
+      <a href="{% url 'edit_site_details' site.id %}"
+   class="action-btn edit-btn">
+   Edit
+</a>
+
+    </button>
+
+    <button class="action-btn delete-btn">
+        <a href="{% url 'delete_site' site.id %}" class="action-btn delete-btn">Delete</a>
+      
+    </button>
+
+  </div>
+
+</div>
+</div>
+
+<!-- ===== MODAL FOR EACH SITE ===== -->
+<div id="modal-{{ site.id }}" class="modal-overlay">
+
+  <div class="modal-box">
+
+    <span class="modal-close"
+          onclick="closeDetails({{ site.id }})">
+      ✕
+    </span>
+
+    <div class="modal-title">
+      Site Details
+    </div>
+
+    <!-- OWNER INFO TOP -->
+    <div class="detail-group">
+      <div class="detail-label">Owner Name</div>
+      <div class="detail-value">
+        {{ site.owner.owner_name }}
+      </div>
+    </div>
+
+    <div class="detail-group">
+      <div class="detail-label">Owner Phone</div>
+      <div class="detail-value">
+        {{ site.owner.owner_phone }}
+      </div>
+    </div>
+
+    <hr style="margin:20px 0;">
+
+    <!-- SITE INFO -->
+    <div class="detail-group">
+      <div class="detail-label">Site Name</div>
+      <div class="detail-value">{{ site.site_name }}</div>
+    </div>
+
+    <div class="detail-group">
+      <div class="detail-label">Category</div>
+      <div class="detail-value">
+        {{ site.get_category_display }}
+      </div>
+    </div>
+
+    <div class="detail-group">
+      <div class="detail-label">Total Sqft</div>
+      <div class="detail-value">{{ site.total_sqft }}</div>
+    </div>
+
+    <div class="detail-group">
+      <div class="detail-label">Building Area</div>
+      <div class="detail-value">{{ site.building_area_sqft }}</div>
+    </div>
+
+    <div class="detail-group">
+      <div class="detail-label">Approximate Budget</div>
+      <div class="detail-value">
+        ₹ {{ site.approximate_budget }}
+      </div>
+    </div>
+
+    <div class="detail-group">
+      <div class="detail-label">Status</div>
+      <div class="detail-value">
+        {{ site.get_status_display }}
+      </div>
+    </div>
+
+    <div class="detail-group">
+      <div class="detail-label">Site - Address,District,State,pinocde</div>
+      <div class="detail-value">
+        {{ site.site_address }},
+        {{ site.site_district }},
+        {{ site.site_state }},
+        {{ site.site_pincode }}
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+{% endfor %}
+
+</div>
+
+<script>
+function openDetails(id){
+  document.getElementById("modal-"+id).style.display="flex";
+}
+
+function closeDetails(id){
+  document.getElementById("modal-"+id).style.display="none";
+}
+
+window.onclick = function(e){
+  if(e.target.classList.contains("modal-overlay")){
+    e.target.style.display="none";
+  }
+}
+</script>
+
+{% endblock %}

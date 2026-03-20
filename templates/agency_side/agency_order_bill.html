@@ -1,0 +1,252 @@
+{% extends "agency_side/agency_dashboard.html" %}
+{% load static %}
+{% block content %}
+
+
+<style>
+
+.quote-badge{
+  background:#28a745;
+  padding:8px 18px;
+  display:inline-block;
+  font-weight:600;
+  border-radius:20px;
+  margin-bottom:20px;
+  color:#fff;
+}
+
+.invoice-container{
+  background:#fff;
+  padding:40px;
+  border-radius:10px;
+  box-shadow:0 4px 20px rgba(0,0,0,0.08);
+}
+
+.invoice-header{
+  display:flex;
+  justify-content:space-between;
+}
+
+.details-section{
+  display:flex;
+  justify-content:space-between;
+  margin:30px 0;
+}
+
+.invoice-table{
+  width:100%;
+  border-collapse:collapse;
+  margin-top:20px;
+}
+
+.invoice-table th,
+.invoice-table td{
+  border-bottom:1px solid #ddd;
+  padding:12px;
+  text-align:left;
+}
+
+.invoice-table th{
+  background:#f5f5f5;
+}
+
+.total-box{
+  text-align:right;
+  margin-top:20px;
+}
+
+.breakdown-box{
+  margin-top:20px;
+  padding:15px;
+  background:#f8f9fa;
+  border-radius:8px;
+}
+
+.line{
+  display:flex;
+  justify-content:space-between;
+  margin:6px 0;
+}
+
+.final-line{
+  font-weight:700;
+  font-size:18px;
+  color:#0b1c2d;
+}
+
+.action-section{
+  margin-top:30px;
+  text-align:center;
+}
+
+.btn{
+  padding:10px 20px;
+  border-radius:6px;
+  text-decoration:none;
+  color:#fff;
+  margin:0 10px;
+  display:inline-block;
+  font-weight:600;
+}
+
+.btn-back{ background:#6c757d; }
+.btn-print{ background:#28a745; }
+
+.btn:hover{
+  opacity:0.9;
+}
+
+
+@media print {
+
+/* hide dashboard layout */
+.topbar,
+.sidebar{
+display:none !important;
+}
+
+/* show invoice */
+.invoice-container{
+display:block;
+position:absolute;
+top:0;
+left:0;
+width:100%;
+box-shadow:none;
+margin:0;
+padding:20px;
+}
+
+/* hide buttons */
+.action-section,
+.quote-badge{
+display:none !important;
+}
+
+}
+</style>
+
+<div class="quote-badge">Confirmed Order Bill</div>
+
+<div class="invoice-container">
+
+  <!-- HEADER -->
+  <div class="invoice-header">
+    <div>
+      <h2>Final Order Invoice</h2>
+    </div>
+    <div>
+      <p><strong>Order ID:</strong> #{{ order.id }}</p>
+      <p><strong>Order Date:</strong> {{ order.created_at|date:"d M Y, h:i A" }}</p>
+    </div>
+  </div>
+
+  <hr>
+  <br>
+    <h4> Expected Delivery from engineer  {% if order.delivery %}
+{{ order.delivery.delivery_date|date:"d M Y" }}<br>Delivery Time :
+{{ order.delivery.delivery_time|time:"h:i A" }}
+{% else %}
+-
+{% endif %}</h4>
+
+  <!-- DETAILS -->
+  <div class="details-section">
+
+    <div>
+      <h4>Engineer Details</h4>
+      <p>Name : {{ order.engineer.engineer_profile.full_name }}</p>
+      <p>Phone : {{ order.engineer.engineer_profile.phone_number }}</p>
+      <p>Address : {{ order.delivery.site_address }}</p>
+      <p>{{ order.delivery.site_district }} - {{ order.delivery.site_pincode }}</p>
+    </div>
+
+    <div>
+      <h4>Agency Details</h4>
+      <p>Agency : {{ order.agency.company_name }}</p>
+      <p>Address : {{ order.agency.company_address }}</p>
+      <p>{{ order.agency.company_district }} - {{ order.agency.company_pincode }}</p>
+    </div>
+
+  </div>
+
+  <!-- PRODUCTS -->
+  <table class="invoice-table">
+    <thead>
+      <tr>
+        <th>Product</th>
+        <th>Qty</th>
+        <th>Price</th>
+        <th>Total</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      {% for item in order.items.all %}
+      <tr>
+        <td>{{ item.product_name }}</td>
+        <td>{{ item.quantity }}</td>
+        <td>₹ {{ item.price }}</td>
+        <td>₹ {{ item.total_price }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <!-- TOTALS -->
+  <div class="total-box">
+    <h3>Base Total: ₹ {{ final_estimate.base_total }}</h3>
+
+    <div class="breakdown-box">
+
+      <div class="line">
+        <span>SGST ({{ final_estimate.sgst_percent }}%)</span>
+        <span>₹ {{ final_estimate.sgst_amount }}</span>
+      </div>
+
+      <div class="line">
+        <span>CGST ({{ final_estimate.cgst_percent }}%)</span>
+        <span>₹ {{ final_estimate.cgst_amount }}</span>
+      </div>
+
+      <div class="line">
+        <span>Platform Fee ({{ final_estimate.platform_fee_percent }}%)</span>
+        <span>₹ {{ final_estimate.platform_fee_amount }}</span>
+      </div>
+
+      <div class="line">
+        <span>Transport + Workers</span>
+        <span>₹ {{ final_estimate.transport_charge }}</span>
+      </div>
+
+      <hr>
+
+      <div class="line final-line">
+        <span>Final Total</span>
+        <span>₹ {{ order.total_amount }}</span>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<!-- ACTIONS -->
+<div class="action-section">
+
+    <a href="{% url 'agency_orders' %}"
+   class="btn btn-back">
+   Back
+</a>
+
+
+  <a href="#"
+     onclick="window.print()"
+     class="btn btn-print">
+     Download Bill
+  </a>
+
+</div>
+
+{% endblock %}
+

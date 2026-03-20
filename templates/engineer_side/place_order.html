@@ -1,0 +1,230 @@
+{% extends "engineer_side/engineer_dashboard.html" %}
+{% load static %}
+{% block content %}
+
+<style>
+
+/* ===== TOP TOTAL BAR ===== */
+.total-bar{
+    background: linear-gradient(90deg,#0b1c2d,#1f3c88);
+    color:#fff;
+    padding:20px;
+    border-radius:10px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:30px;
+}
+
+.total-bar h2{
+    margin:0;
+}
+
+.total-amount{
+    font-size:24px;
+    font-weight:700;
+}
+
+/* ===== DELIVERY CARD ===== */
+.delivery-card{
+    background:#fff;
+    padding:30px;
+    border-radius:10px;
+    box-shadow:0 6px 20px rgba(0,0,0,0.08);
+    margin-bottom:30px;
+}
+
+.delivery-card h3{
+    margin-bottom:20px;
+    color:#0b1c2d;
+}
+
+/* ===== INFO GRID ===== */
+.info-grid{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:20px;
+}
+
+.info-item label{
+    font-size:13px;
+    color:#888;
+    display:block;
+}
+
+.info-item span{
+    font-weight:600;
+    color:#0b1c2d;
+}
+
+/* ===== FORM SECTION ===== */
+.schedule-section{
+    margin-top:30px;
+}
+
+.form-row{
+    margin-bottom:20px;
+}
+
+.form-row label{
+    font-weight:600;
+    display:block;
+    margin-bottom:6px;
+}
+
+.form-row input{
+    width:100%;
+    padding:10px;
+    border-radius:6px;
+    border:1px solid #ddd;
+}
+
+/* ===== BUTTONS ===== */
+.btn{
+    padding:10px 20px;
+    border-radius:6px;
+    text-decoration:none;
+    border:none;
+    cursor:pointer;
+    font-weight:600;
+}
+
+.btn-back{
+    background:#c02207;
+    color:#fff;
+    float:right;
+}
+
+.btn-continue{
+    background:#28a745;
+    color:#fff;
+    opacity:0.6;
+    pointer-events:none;
+}
+
+.btn-continue.enabled{
+    opacity:1;
+    pointer-events:auto;
+}
+
+</style>
+
+<!-- ===== TOP TOTAL BAR ===== -->
+<div class="total-bar">
+    <h2>  #{{ quotation.id }} Final Order Amount</h2>
+    <div class="total-amount">
+        ₹ {{ final_estimate.final_total }}
+    </div>
+</div>
+
+<!-- BACK BUTTON -->
+<a href="{% url 'manage_quotations_orders' quotation.site.id %}" 
+   class="btn btn-back">
+   Back
+</a>
+
+<br><br>
+
+<form method="POST">
+{% csrf_token %}
+
+<!-- ===== DELIVERY DETAILS ===== -->
+<div class="delivery-card">
+
+    <h3>Delivery Details</h3>
+
+    <div class="info-grid">
+
+        <div class="info-item">
+            <label>Engineer Name</label>
+            <span>{{ quotation.engineer.engineer_profile.full_name }}</span>
+        </div>
+
+        <div class="info-item">
+            <label>Engineer Phone</label>
+            <span>{{ quotation.engineer.engineer_profile.phone_number }}</span>
+        </div>
+
+        <div class="info-item">
+            <label>Site Owner Phone</label>
+            <span>{{ quotation.site.owner.owner_phone }}</span>
+
+        </div>
+
+        <div class="info-item">
+            <label>Site Address</label>
+            <span>{{ quotation.site.site_address }}</span>
+        </div>
+
+        <div class="info-item">
+            <label>District</label>
+            <span>{{ quotation.site.site_district }}</span>
+        </div>
+
+        <div class="info-item">
+            <label>Pincode</label>
+            <span>{{ quotation.site.site_pincode }}</span>
+        </div>
+
+    </div><br><br>
+
+    <div class="delivery_det">
+        <h3 style="color: #28a745;"> #{{ quotation.id }} Quotation Mention Delivery Date :</h3>
+    <h4 style="font-weight: 500;">Delivery Prefferd :       {{ quotation.get_delivery_preference_display }}</h4>  
+    <h4 style="font-weight: 500;"> Delivery Expected Date : {{ quotation.expected_delivery_date|date:"d M Y" }}</h4>  </div>
+
+    <!-- ===== DELIVERY SCHEDULE ===== -->
+    <div class="schedule-section">
+
+        <h3>Expected Delivery Schedule </h3>
+        <h4 style="color: #28a745;">If You mention the Future date or Same date From The Quotation Your Order "Approval" Possiblity Is High ..Otherwise,Your Order May Be Reject By Agency</h4><br>
+        
+
+        <div class="form-row">
+            <label>Select Delivery Date</label>
+            <input type="date" name="delivery_date" id="delivery_date" required>
+
+
+        </div>
+
+        <div class="form-row">
+            <label>Select Delivery Time (24 hour format )</label>
+            <input type="time" name="delivery_time" id="delivery_time" placeholder="24 hours format" required>
+        </div>
+
+    </div>
+
+</div>
+
+<!-- CONTINUE BUTTON -->
+<button type="submit" id="continueBtn" class="btn btn-continue">
+    Continue
+</button>
+
+</form>
+
+<script>
+
+const dateInput = document.getElementById("delivery_date");
+const timeInput = document.getElementById("delivery_time");
+const continueBtn = document.getElementById("continueBtn");
+
+function checkEnable(){
+    if(dateInput.value && timeInput.value){
+        continueBtn.classList.add("enabled");
+    } else {
+        continueBtn.classList.remove("enabled");
+    }
+}
+
+dateInput.addEventListener("change", checkEnable);
+timeInput.addEventListener("change", checkEnable);
+
+</script>
+
+<script>
+const today = new Date().toISOString().split("T")[0];
+document.getElementById("delivery_date").setAttribute("min", today);
+</script>
+
+{% endblock %}

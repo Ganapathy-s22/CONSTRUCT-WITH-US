@@ -1,0 +1,412 @@
+{% extends "engineer_side/engineer_dashboard.html" %}
+{% load static %}
+{% block content %}
+
+<style>
+
+/* ===== WRAPPER ===== */
+.site-create-wrapper{
+  max-width:1100px;
+  margin:30px auto;
+  background:#ffffff;
+  padding:40px;
+  border-radius:12px;
+  box-shadow:0 8px 25px rgba(0,0,0,0.08);
+}
+
+/* ===== TOP TABS ===== */
+.site-tabs{
+  display:flex;
+  background:#ffffff;
+  border-radius:8px;
+  overflow:hidden;
+  box-shadow:0 8px 16px rgba(0,0,0,0.08);
+  margin-bottom:30px;
+}
+
+.site-tab{
+  flex:1;
+  text-align:center;
+  padding:14px 0;
+  text-decoration:none;
+  font-weight:600;
+  color:#0b1c2d;
+  border-right:1px solid #eee;
+  transition:0.3s;
+}
+
+.site-tab:last-child{
+  border-right:none;
+}
+
+.site-tab:hover{
+  background:#0b1c2d;
+  color:#fff;
+}
+
+.site-tab.active{
+  background:#0b1c2d;
+  color:#fff;
+}
+/* ===== GRID ===== */
+.site-form-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:40px;
+}
+
+/* ===== SECTION TITLE ===== */
+.section-title{
+  font-size:22px;
+  font-weight:600;
+  margin-bottom:20px;
+  color:#0b1c2d;
+  border-left:4px solid #ff7a18;
+  padding-left:10px;
+}
+
+/* ===== FORM GROUP ===== */
+.form-group{
+  margin-bottom:15px;
+}
+
+.form-group label{
+  font-weight:550;
+  display:block;
+  color:#232323;
+  margin-bottom:6px;
+}
+
+.form-control{
+  width:100%;
+  padding:9px;
+  border:1px solid #b0afaf;
+  border-radius:6px;
+  font-size:14px;
+}
+
+textarea.form-control{
+  resize:none;
+  height:80px;
+}
+
+/* ===== BUTTONS ===== */
+.form-actions{
+  margin-top:30px;
+  text-align:center;
+}
+
+.btn{
+  padding:12px 40px;
+  border:none;
+  border-radius:2px;
+  font-weight:500;
+  cursor:pointer;
+  font-size:14px;
+  margin-left:10px;
+}
+
+.btn-back{
+  background:#0b1c2d;
+  color:#fff;
+  text-decoration:none;
+}
+
+.btn-create{
+  background:#ff7a18;
+  color:#fff;
+}
+
+.btn-create:hover{
+  background:#ff9f50;
+}
+
+/* ===== SUCCESS MESSAGE ===== */
+.alert-success{
+  background:#e6ffed;
+  color:#0f5132;
+  padding:12px;
+  border-radius:6px;
+  margin-bottom:20px;
+  font-weight:600;
+}
+
+</style>
+<div class="site-wrapper">
+
+    <div class="site-tabs">
+
+    <a href="{% url 'create_site' %}" 
+       class="site-tab {% if active_tab == 'create' %}active{% endif %}">
+       Create New Site
+    </a>
+
+    <a href="{% url 'edit_delete_site' %}" 
+       class="site-tab {% if active_tab == 'edit' %}active{% endif %}">
+       Edit & Delete Site
+    </a>
+  </div>
+<div class="site-create-wrapper">
+
+
+
+
+  <h2 style="margin-bottom:25px;color: #ff7a18;justify-content: center;">Create New Construction Site</h2>
+
+  {% if messages %}
+    {% for message in messages %}
+      <div class="alert-success">
+        {{ message }}
+      </div>
+    {% endfor %}
+  {% endif %}
+
+  <form method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+
+    <div class="site-form-grid">
+
+      <!-- LEFT SIDE : SITE DETAILS -->
+      <div>
+        <div class="section-title">Construction Site Details</div>
+
+        <div class="form-group">
+          <label>Site Name</label>
+          <input type="text" name="site_name"
+       value="{{ form_data.site_name|default:'' }}"
+       class="form-control" required></div>
+
+        <div class="form-group">
+  <label>Category</label>
+  <select name="category" id="categorySelect" class="form-control" required>
+  {% for key,value in category_choices %}
+  <option value="{{ key }}"
+  {% if form_data.category == key %}selected{% endif %}>
+    {{ value }}
+  </option>
+  {% endfor %}
+</select>
+
+</div>
+
+<div class="form-group" id="otherCategoryGroup" style="display:none;">
+  <label>Mention Here as it is</label>
+  <input type="text"
+name="other_category"
+value="{{ form_data.other_category|default:'' }}"
+class="form-control">
+</div>
+
+
+        <div class="form-group">
+          <label>Total Area (Sq.ft)</label>
+          <input type="number" step="0.01"
+name="total_sqft"
+value="{{ form_data.total_sqft|default:'' }}"
+class="form-control" required>
+        </div>
+
+        <div class="form-group">
+          <label>Building Area (Sq.ft)</label>
+          <input type="number" step="0.01" name="building_area_sqft" class="form-control"value="{{ form_data.building_area_sqft|default:'' }}" required>
+        </div>
+
+        <div class="form-group">
+          <label>Approximate Budget</label>
+          <input type="number" step="0.01" name="approximate_budget" class="form-control"value="{{ form_data.approximate_budget|default:'' }}" required>
+        </div>
+
+        
+        <div class="form-group">
+          <label>Start Date</label>
+          <input type="date" name="start_date" class="form-control" value="{{ form_data.start_date|default:'' }}" min="{{ today }}" required>
+        </div>
+
+        <div class="form-group">
+          <label>End Date</label>
+          <input type="date" name="end_date" class="form-control" value="{{ form_data.end_date|default:'' }}" min="{{ today }}" required>
+        </div>
+
+        <div class="form-group">
+    <label>Project Status</label>
+    <select name="status" class="form-control" required>
+  <option value="Planning" {% if form_data.status == "Planning" %}selected{% endif %}>Planning</option>
+  <option value="Started" {% if form_data.status == "Started" %}selected{% endif %}>Started</option>
+  <option value="Ongoing" {% if form_data.status == "Ongoing" %}selected{% endif %}>Ongoing</option>
+  <option value="NearComplete" {% if form_data.status == "NearComplete" %}selected{% endif %}>Near To Complete</option>
+  <option value="Completed" {% if form_data.status == "Completed" %}selected{% endif %}>Completed</option>
+  <option value="HandedOver" {% if form_data.status == "HandedOver" %}selected{% endif %}>Handed Over</option>
+</select>
+    </div>
+
+        <div class="form-group">
+        <label>Description</label>
+        <textarea name="description" placeholder="Brief product description" class="form-control">{{ form_data.description|default:'' }}</textarea>
+        </div>
+
+        <div class="form-group">
+          <label>Site Map</label>
+          <input type="file" name="site_map" class="form-control">
+        </div>
+
+        <div class="form-group">
+          <label>Blueprint File</label>
+          <input type="file" name="blueprint_file" class="form-control">
+        </div>
+
+        <div class="form-group">
+          <label>Site Address</label>
+          <textarea name="site_address" class="form-control" required>{{ form_data.site_address|default:'' }}</textarea>
+        </div>
+
+      </div>
+
+
+      <!-- RIGHT SIDE : OWNER DETAILS -->
+      <div><br><br><br>
+
+        <div class="form-group">
+  <label>District</label>
+
+  <select name="site_district" class="form-control" required>
+
+    <option value="">Select District</option>
+
+    <option value="ARIYALUR">Ariyalur</option>
+    <option value="CHENGALPATTU">Chengalpattu</option>
+    <option value="CHENNAI">Chennai</option>
+    <option value="COIMBATORE">Coimbatore</option>
+    <option value="CUDDALORE">Cuddalore</option>
+    <option value="DHARMAPURI">Dharmapuri</option>
+    <option value="DINDIGUL">Dindigul</option>
+    <option value="ERODE">Erode</option>
+    <option value="KALLAKURICHI">Kallakurichi</option>
+    <option value="KANCHIPURAM">Kanchipuram</option>
+    <option value="KANYAKUMARI">Kanyakumari</option>
+    <option value="KARUR">Karur</option>
+    <option value="KRISHNAGIRI">Krishnagiri</option>
+    <option value="MADURAI">Madurai</option>
+    <option value="MAYILADUTHURAI">Mayiladuthurai</option>
+    <option value="NAGAPATTINAM">Nagapattinam</option>
+    <option value="NAMAKKAL">Namakkal</option>
+    <option value="NILGIRIS">Nilgiris</option>
+    <option value="PERAMBALUR">Perambalur</option>
+    <option value="PUDUKKOTTAI">Pudukottai</option>
+    <option value="RAMANATHAPURAM">Ramanathapuram</option>
+    <option value="RANIPET">Ranipet</option>
+    <option value="SALEM">Salem</option>
+    <option value="SIVAGANGA">Sivaganga</option>
+    <option value="TENKASI">Tenkasi</option>
+    <option value="THANJAVUR">Thanjavur</option>
+    <option value="THENI">Theni</option>
+    <option value="THOOTHUKUDI">Thoothukudi</option>
+    <option value="TIRUCHIRAPPALLI">Tiruchirappalli</option>
+    <option value="TIRUNELVELI">Tirunelveli</option>
+    <option value="TIRUPATTUR">Tirupattur</option>
+    <option value="TIRUPPUR">Tiruppur</option>
+    <option value="TIRUVALLUR">Tiruvallur</option>
+    <option value="TIRUVANNAMALAI">Tiruvannamalai</option>
+    <option value="TIRUVARUR">Tiruvarur</option>
+    <option value="VELLORE">Vellore</option>
+    <option value="VILLUPURAM">Villupuram</option>
+    <option value="VIRUDHUNAGAR">Virudhunagar</option>
+
+  </select>
+
+</div>
+
+        <div class="form-group">
+          <label>State</label>
+          <input type="text" name="site_state" class="form-control"  value="{{ form_data.site_state|default:'' }}" required>
+        </div>
+
+        <div class="form-group">
+          <label>Pincode</label>
+          <input type="text" name="site_pincode" class="form-control" value="{{ form_data.site_pincode|default:'' }}" required>
+        </div>
+
+        <div class="section-title">Site Owner Details</div>
+
+        <div class="form-group">
+          <label>Owner Name</label>
+          <input type="text" name="owner_name" class="form-control" value="{{ form_data.owner_name|default:'' }}" required>
+        </div>
+
+        <div class="form-group">
+          <label>Owner Gender</label>
+          <select name="owner_gender" class="form-control" required>
+  <option value="Male" {% if form_data.owner_gender == "Male" %}selected{% endif %}>Male</option>
+  <option value="Female" {% if form_data.owner_gender == "Female" %}selected{% endif %}>Female</option>
+  <option value="Other" {% if form_data.owner_gender == "Other" %}selected{% endif %}>Other</option>
+</select>
+
+        </div>
+
+        <div class="form-group">
+          <label>Owner Phone</label>
+          <input type="text" name="owner_phone" value="{{ form_data.owner_phone|default:'' }}" class="form-control" required>
+        </div>
+
+        <div class="form-group">
+          <label>Owner Address</label>
+          <textarea name="owner_address" class="form-control" required>{{ form_data.owner_address|default:'' }}</textarea>
+        </div>
+
+        <div class="form-group">
+          <label>Owner District</label>
+          <input type="text" name="owner_district" class="form-control" value="{{ form_data.owner_district|default:'' }}" required>
+        </div>
+
+        <div class="form-group">
+          <label>Owner Pincode</label>
+          <input type="text" name="owner_pincode" class="form-control" value="{{ form_data.owner_pincode|default:'' }}" required>
+        </div>
+
+      </div>
+
+    </div>
+
+    <div class="form-actions">
+      <a href="{% url 'eng_dash' %}" class="btn btn-back">
+        Back
+      </a>
+
+      <button type="submit" class="btn btn-create">
+        Create Site
+      </button>
+    </div>
+
+  </form>
+
+</div>
+</div>
+<script>
+document.addEventListener("DOMContentLoaded", function(){
+
+  const categorySelect = document.getElementById("categorySelect");
+  const otherCategoryGroup = document.getElementById("otherCategoryGroup");
+
+  function toggleOtherCategory(){
+    if(categorySelect.value === "others"){
+      otherCategoryGroup.style.display = "block";
+    } else {
+      otherCategoryGroup.style.display = "none";
+    }
+  }
+
+  toggleOtherCategory(); // page load check
+  categorySelect.addEventListener("change", toggleOtherCategory);
+
+});
+</script>
+<script>
+const startInput = document.querySelector("input[name='start_date']");
+const endInput = document.querySelector("input[name='end_date']");
+
+startInput.addEventListener("change", function(){
+    endInput.min = this.value;
+});
+</script>
+
+
+{% endblock %}

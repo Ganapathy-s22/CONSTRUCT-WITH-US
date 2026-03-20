@@ -1,0 +1,252 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Engineer Dashboard</title>
+
+    <!-- Favicon -->
+<link rel="icon" type="image/x-icon" href="{% static 'images/favicon/favicon.ico' %}">
+
+<link rel="icon" type="image/png" sizes="16x16" href="{% static 'images/favicon/favicon-16x16.png' %}">
+
+<link rel="icon" type="image/png" sizes="32x32" href="{% static 'images/favicon/favicon-32x32.png' %}">
+
+<link rel="apple-touch-icon" sizes="180x180" href="{% static 'images/favicon/apple-touch-icon.png' %}">
+
+<link rel="icon" type="image/png" sizes="192x192" href="{% static 'images/favicon/android-chrome-192x192.png' %}">
+
+<link rel="icon" type="image/png" sizes="512x512" href="{% static 'images/favicon/android-chrome-512x512.png' %}">
+
+<link rel="manifest" href="{% static 'images/favicon/site.webmanifest' %}">
+
+  <style>
+    * {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Oswald", sans-serif;
+}
+
+    /* Remove body flex */
+body {
+  background: #ffffff;
+  overflow: hidden;   /* prevent body scroll */
+}
+
+    /* ===== SIDEBAR (FIXED) ===== */
+.sidebar {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 15%;
+  height: 100vh;
+  background: #0b1c2d;
+  padding: 30px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+}
+
+    .sidebar h2 {
+      color: #ff7a18;
+      margin-bottom: 30px;
+      font-size: 22px;
+      font-weight: 700;
+      text-align: center;
+    }
+
+    .sidebar a {
+      text-decoration: none;
+      color: #fff;
+      font-size: 20px;
+      padding: 10px 12px;
+      border-radius: 6px;
+      transition: 0.3s;
+    }
+
+    .sidebar a:hover {
+      background: rgba(233, 100, 5, 0.929);
+    }
+
+    /* ===== MAIN AREA ===== */
+    /* ===== MAIN WRAPPER ===== */
+.main {
+  margin-left: 15%;
+  width: 85%;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+    /* ===== TOPBAR ===== */
+    .topbar {
+  height: 80px;
+  width: 100%;
+  background: #0b1c2d;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+    .topbar h3 {
+      font-weight: 400;
+    }
+
+    .logout-btn {
+      background: #ff7a18;
+      color: #fff;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .logout-btn:hover {
+      background: #ff9f50;
+    }
+
+    /* ===== CONTENT (SCROLLABLE) ===== */
+.content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 30px;
+  background: #ffffff;
+}
+
+    /* ===== LOGOUT MODAL BACKDROP ===== */
+.logout-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(11, 28, 45, 0.75);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+/* ===== MODAL BOX ===== */
+.logout-box {
+  background: #ffffff;
+  padding: 30px;
+  width: 360px;
+  border-radius: 14px;
+  text-align: center;
+  border-top: 4px solid #ff7a18;
+}
+
+.logout-box h3 {
+  color: #0b1c2d;
+  margin-bottom: 10px;
+}
+
+.logout-box p {
+  color: #1f3b5b;
+  margin-bottom: 25px;
+}
+
+/* ===== BUTTONS ===== */
+.logout-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 15px;
+}
+
+.btn-back {
+  flex: 1;
+  background: #ffffff;
+  border: 1px solid #0b1c2d;
+  color: #0b1c2d;
+  padding: 10px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.btn-logout {
+  flex: 1;
+  background: #ff7a18;
+  color: #ffffff;
+  padding: 10px;
+  border-radius: 0px;
+  text-decoration: none;
+  text-align: center;
+}
+
+.btn-logout:hover {
+  background: #ff9f50;
+}
+
+  </style>
+</head>
+
+<body>
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <h2>Engineer</h2>
+    <a href="{% url 'eng_profile' %}">My Profile</a>
+    <a href="{% url 'create_site' %}">Create and Edit Sites</a>
+    <a href="{% url 'manage_all_site' %}">Manage All Sites</a>
+  </div>
+
+  <!-- MAIN -->
+  <div class="main">
+
+    <!-- TOPBAR -->
+    <div class="topbar">
+      <h3>Engineer Dashboard</h3>
+      
+        <button class="logout-btn" onclick="openLogoutModal()">Logout</button>
+      
+    </div>
+
+    <!-- CONTENT -->
+    <div class="content">
+      {% block content %}
+      <h2>Welcome 👋</h2>
+      <p>Select an option from the sidebar to get started.</p>
+      {% endblock %}
+    </div>
+
+  </div>
+  <!-- LOGOUT MODAL -->
+<div id="logoutModal" class="logout-modal">
+  <div class="logout-box">
+
+    <h3>Confirm Logout</h3>
+    <p>Are you sure you want to logout?</p>
+
+    <div class="logout-actions">
+      <button class="btn-back" onclick="closeLogoutModal()">Back</button>
+      {% csrf_token %}
+      <button><a href="{% url 'home' %}" class="btn-logout">logout</a></button>
+   
+</a>
+
+    </div>
+
+  </div>
+</div>
+
+<script>
+  function openLogoutModal() {
+    document.getElementById("logoutModal").style.display = "flex";
+  }
+
+  function closeLogoutModal() {
+    document.getElementById("logoutModal").style.display = "none";
+  }
+</script>
+
+</body> 
+</html>

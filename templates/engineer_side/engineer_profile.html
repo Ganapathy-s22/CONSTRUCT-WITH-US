@@ -1,0 +1,366 @@
+{% extends "engineer_side/engineer_dashboard.html" %}
+{% load static %}
+{% block content %}
+
+<style>
+.profile-wrapper{
+  max-width:900px;
+  margin:auto;
+  background:#ffffff;
+  padding:35px;
+  border-radius:16px;
+  box-shadow:0 10px 35px rgba(0,0,0,0.08);
+}
+
+.profile-wrapper h2{
+  margin-bottom:25px;
+  font-weight:600;
+  color:#0b1c2d;
+  border-left:4px solid #ff7a18;
+  padding-left:10px;
+}
+
+.section-title{
+  margin-top:25px;
+  margin-bottom:10px;
+  font-weight:600;
+  color:#ff7a18;
+}
+
+.form-group{
+  margin-bottom:15px;
+}
+
+.form-group label{
+  font-weight:500;
+  font-size:14px;
+  display:block;
+  margin-bottom:5px;
+  color:#1f3b5b;
+}
+
+.form-control{
+  width:100%;
+  padding:10px;
+  border:1px solid #d9d9d9;
+  border-radius:8px;
+  font-size:14px;
+  transition:0.3s;
+}
+
+.form-control:focus{
+  border-color:#ff7a18;
+  outline:none;
+}
+
+.form-control[readonly]{
+  background:#f5f7fa;
+  cursor:not-allowed;
+}
+
+.certificate-link{
+  font-size:13px;
+  color:#0b1c2d;
+  margin-top:5px;
+  display:block;
+}
+
+.action-buttons{
+  margin-top:35px;
+  text-align:center;
+}
+
+.big-btn{
+  padding:12px 35px;
+  font-size:15px;
+  border:none;
+  border-radius:8px;
+  cursor:pointer;
+  transition:0.3s;
+  margin:0 10px;
+}
+
+.edit-btn{
+  background:#0b1c2d;
+  color:#fff;
+}
+
+.save-btn{
+  background:#ff7a18;
+  color:#fff;
+}
+
+.save-btn:disabled{
+  background:#ccc;
+  cursor:not-allowed;
+}
+
+.alert-success{
+  background:#e6ffed;
+  color:#0f5132;
+  padding:12px;
+  border-radius:8px;
+  margin-bottom:20px;
+}
+
+.profile-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:20px;
+}
+
+.back-btn{
+  background:#0b1c2d;
+  color:#fff;
+  padding:8px 16px;
+  text-decoration:none;
+  border-radius:6px;
+  font-size:14px;
+  transition:0.3s;
+}
+
+.back-btn:hover{
+  background:#123e6a;
+}
+
+</style>
+
+<div class="profile-wrapper">
+
+  <div class="profile-header">
+  <h2>Engineer Profile</h2>
+  <a href="{% url 'eng_dash' %}" class="back-btn">
+    ← Back
+  </a>
+</div>
+
+
+  {% if messages %}
+    {% for message in messages %}
+      <div class="alert-success">
+        {{ message }}
+      </div>
+    {% endfor %}
+  {% endif %}
+
+  <form method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+
+    <!-- USERNAME (ALWAYS READONLY) -->
+    <div class="form-group">
+      <label>Username</label>
+      <input type="text"
+             value="{{ profile.user.username }}"
+             class="form-control"
+             readonly>
+    </div>
+
+    <!-- BASIC -->
+    <div class="form-group">
+      <label>Email</label>
+      <input type="email" name="email"
+             value="{{ profile.email }}"
+             class="form-control editable"
+             readonly>
+    </div>
+
+    <!-- EDUCATION -->
+    <div class="section-title">Educational Details</div>
+
+    <div class="form-group">
+      <label>Degree</label>
+      <select name="degree" id="degreeSelect"
+        class="form-control editable"
+        disabled>
+
+  {% for key,value in degree_choices %}
+    <option value="{{ key }}"
+      {% if profile.degree == key %}selected{% endif %}>
+      {{ value }}
+    </option>
+  {% endfor %}
+</select>
+
+    </div>
+
+    <div class="form-group" id="otherDegreeGroup" style="display:none;">
+  <label>Other Degree</label>
+  <input type="text" name="other_degree"
+         value="{{ profile.other_degree }}"
+         class="form-control editable"
+         readonly>
+</div>
+
+
+    <div class="form-group">
+      <label>College Name</label>
+      <input type="text" name="college_name"
+             value="{{ profile.college_name }}"
+             class="form-control editable"
+             readonly>
+    </div>
+
+    <div class="form-group">
+      <label>College District</label>
+      <input type="text" name="clg_district"
+             value="{{ profile.clg_district }}"
+             class="form-control editable"
+             readonly>
+    </div>
+
+    <div class="form-group">
+      <label>Degree Certificate</label>
+      <input type="file"
+             name="degree_certificate"
+             class="form-control editable"
+             disabled>
+
+      {% if profile.degree_certificate %}
+        <a href="{{ profile.degree_certificate.url }}"
+           target="_blank"
+           class="certificate-link">
+           View Uploaded Certificate
+        </a>
+      {% endif %}
+    </div>
+
+    <!-- PERSONAL -->
+    <div class="section-title">Personal Details</div>
+
+    <div class="form-group">
+      <label>Full Name</label>
+      <input type="text" name="full_name"
+             value="{{ profile.full_name }}"
+             class="form-control editable"
+             readonly>
+    </div>
+
+    <div class="form-group">
+      <label>Age</label>
+      <input type="number" name="age"
+             value="{{ profile.age }}"
+             class="form-control editable"
+             readonly>
+    </div>
+
+    <div class="form-group">
+      <label>Gender</label>
+      <select name="gender"
+              class="form-control editable"
+              disabled>
+        <option value="Male" {% if profile.gender == "Male" %}selected{% endif %}>Male</option>
+        <option value="Female" {% if profile.gender == "Female" %}selected{% endif %}>Female</option>
+        <option value="Other" {% if profile.gender == "Other" %}selected{% endif %}>Other</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label>Date of Birth</label>
+      <input type="date" name="date_of_birth"
+             value="{{ profile.date_of_birth|date:'Y-m-d' }}"
+             class="form-control editable"
+             readonly>
+    </div>
+
+    <div class="form-group">
+      <label>Phone Number</label>
+      <input type="text" name="phone_number"
+             value="{{ profile.phone_number }}"
+             class="form-control editable"
+             readonly>
+    </div>
+
+    <div class="form-group">
+      <label>Address</label>
+      <textarea name="address"
+                class="form-control editable"
+                readonly>{{ profile.address }}</textarea>
+    </div>
+
+    <div class="form-group">
+      <label>District</label>
+      <input type="text" name="district"
+             value="{{ profile.district }}"
+             class="form-control editable"
+             readonly>
+    </div>
+
+    <div class="form-group">
+      <label>State</label>
+      <input type="text" name="state"
+             value="{{ profile.state }}"
+             class="form-control editable"
+             readonly>
+    </div>
+
+    <div class="form-group">
+      <label>Pincode</label>
+      <input type="text" name="pincode"
+             value="{{ profile.pincode }}"
+             class="form-control editable"
+             readonly>
+    </div>
+
+    <div class="action-buttons">
+      <button type="button" id="editBtn" class="big-btn edit-btn">
+        Edit
+      </button>
+
+      <button type="submit" id="saveBtn"
+              class="big-btn save-btn"
+              disabled>
+        Save All
+      </button>
+    </div>
+
+  </form>
+
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function(){
+
+  const editBtn = document.getElementById("editBtn");
+  const saveBtn = document.getElementById("saveBtn");
+  const editableFields = document.querySelectorAll(".editable");
+  const degreeSelect = document.getElementById("degreeSelect");
+  const otherDegreeGroup = document.getElementById("otherDegreeGroup");
+
+  function toggleOtherDegree(){
+    if(degreeSelect.value === "Others"){
+      otherDegreeGroup.style.display = "block";
+    } else {
+      otherDegreeGroup.style.display = "none";
+    }
+  }
+
+  // Page load check
+  toggleOtherDegree();
+
+  // Dropdown change
+  degreeSelect.addEventListener("change", toggleOtherDegree);
+
+  // Edit button logic
+  editBtn.addEventListener("click", function(){
+
+    editableFields.forEach(field => {
+
+      if(field.tagName === "SELECT" || field.type === "file"){
+        field.disabled = false;
+      } else {
+        field.removeAttribute("readonly");
+      }
+
+    });
+
+    editBtn.disabled = true;
+    saveBtn.disabled = false;
+
+  });
+
+});
+</script>
+
+
+{% endblock %}

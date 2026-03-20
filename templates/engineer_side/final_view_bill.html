@@ -1,0 +1,474 @@
+{% extends "engineer_side/engineer_dashboard.html" %}
+{% load static %}
+{% block content %}
+
+<style>
+
+.quote-badge{
+  background:#28a745;
+  padding:8px 18px;
+  display:inline-block;
+  font-weight:600;
+  border-radius:20px;
+  margin-bottom:20px;
+  color:#fff;
+}
+
+.invoice-container{
+  background:#fff;
+  padding:40px;
+  border-radius:10px;
+  box-shadow:0 4px 20px rgba(0,0,0,0.08);
+}
+
+.invoice-header{
+  display:flex;
+  justify-content:space-between;
+}
+
+.details-section{
+  display:flex;
+  justify-content:space-between;
+  margin:30px 0;
+}
+
+.invoice-table{
+  width:100%;
+  border-collapse:collapse;
+  margin-top:20px;
+}
+
+.invoice-table th,
+.invoice-table td{
+  border-bottom:1px solid #ddd;
+  padding:12px;
+  text-align:left;
+}
+
+.invoice-table th{
+  background:#f5f5f5;
+}
+
+.total-box{
+  text-align:right;
+  margin-top:20px;
+}
+
+.breakdown-box{
+  margin-top:20px;
+  padding:15px;
+  background:#f8f9fa;
+  border-radius:8px;
+}
+
+.line{
+  display:flex;
+  justify-content:space-between;
+  margin:6px 0;
+}
+
+.final-line{
+  font-weight:700;
+  font-size:18px;
+  color:#0b1c2d;
+}
+
+.action-section{
+  margin-top:30px;
+  text-align:center;
+}
+
+.btn{
+  padding:10px 20px;
+  border-radius:6px;
+  text-decoration:none;
+  color:#fff;
+  margin:0 10px;
+  display:inline-block;
+  font-weight:600;
+}
+
+.btn-back{ background:#6c757d; }
+.btn-order{ background:#007bff; }
+.btn-print{ background:#28a745; }
+
+.btn:hover{
+  opacity:0.9;
+}
+
+/* PRINT MODE */
+@media print {
+
+  body * {
+      visibility: hidden;
+  }
+
+  .invoice-container,
+  .invoice-container * {
+      visibility: visible;
+  }
+
+  .invoice-container {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+  }
+
+  .action-section,
+  .quote-badge {
+      display: none !important;
+  }
+
+}
+
+.countdown-timer{ 
+  font-size: xx-large;
+  margin-left: 37%;
+  color: #28a745;
+}
+
+.btn-regenerate{
+  background:#ffc107;
+  color:#000;
+}
+
+.popup-overlay{
+ position:fixed;
+ top:0;
+ left:0;
+ width:100%;
+ height:100%;
+ background:rgba(0,0,0,0.65);
+ display:none;
+ justify-content:center;
+ align-items:center;
+ z-index:9999;
+}
+
+.popup-box{
+ background:#fff;
+ padding:35px;
+ border-radius:12px;
+ width:520px;
+ box-shadow:0 10px 35px rgba(0,0,0,0.25);
+}
+
+.popup-box h3{
+ margin-bottom:10px;
+ color:#0b1c2d;
+}
+
+.popup-note{
+ font-size:14px;
+ color:#666;
+ margin-bottom:20px;
+ line-height:1.6;
+}
+
+.popup-box label{
+ font-weight:600;
+ display:block;
+ margin-bottom:6px;
+}
+
+.popup-box select,
+.popup-box input{
+ width:100%;
+ padding:10px;
+ border:1px solid #ccc;
+ border-radius:6px;
+ margin-bottom:15px;
+}
+
+.popup-actions{
+ display:flex;
+ justify-content:space-between;
+ margin-top:10px;
+}
+
+.btn-generate{
+ background:#28a745;
+ color:white;
+ border:none;
+ padding:10px 20px;
+ border-radius:6px;
+ cursor:pointer;
+}
+
+.btn-generate:disabled{
+ background:#9fcaa9;
+ cursor:not-allowed;
+}
+
+</style>
+
+<div class="quote-badge">Final Quotation Bill From Ageny</div>
+<div class="validity-box">
+  <strong>Quotation Valid Until :</strong>
+  {{ quotation.quotation_valid_until|date:"d M Y, h:i A" }}
+</div>
+
+<div id="countdown" class="countdown-timer"></div>
+
+<div class="invoice-container">
+
+  <!-- HEADER -->
+  <div class="invoice-header">
+    <div>
+      <h2>Final Invoice</h2>
+    </div>
+    <div>
+      <p><strong>Request ID:</strong> #{{ quotation.id }}</p>
+      <p><strong>Date:</strong> {{ quotation.created_at|date:"d M Y, h:i A" }}</p>
+    </div>
+  </div>
+
+  <hr>
+    <br>
+  <div class="delivery_det">
+    <h4>Delivery Prefferd :       {{ quotation.get_delivery_preference_display }}</h4>  
+    <h4> Delivery Expected Date : {{ quotation.expected_delivery_date|date:"d M Y" }}</h4>  </div>
+  <!-- BILL DETAILS -->
+
+  <!-- BILL DETAILS -->
+  <div class="details-section">
+
+    <div>
+      <h4>Engineer Details</h4>
+      <p>Name : {{ quotation.engineer.engineer_profile.full_name }}</p>
+      <p>Phone : {{ quotation.engineer.engineer_profile.phone_number }}</p>
+      <p>Address : {{ quotation.site.site_address }}</p>
+      <p>{{ quotation.site.site_district }} - {{ quotation.site.site_pincode }}</p>
+    </div>
+
+    <div>
+      <h4>Agency Details</h4>
+      <p>Agency : {{ quotation.agency.company_name }}</p>
+      <p>Address : {{ quotation.agency.company_address }}</p>
+      <p>{{ quotation.agency.company_district }} - {{ quotation.agency.company_pincode }}</p>
+    </div>
+
+  </div>
+
+<table class="invoice-table">
+  <thead>
+    <tr>
+      <th>Product</th>
+      <th>Qty</th>
+      <th>Price</th>
+      <th>Total</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    {% for item in final_estimate.final_items.all %}
+    <tr>
+      <td>{{ item.product_name }}</td>
+      <td>{{ item.quantity }}</td>
+      <td>₹ {{ item.final_price }}</td>
+      <td>₹ {{ item.total_price }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+  <div class="total-box">
+    <h3>Total Cost: ₹ {{ quotation.final_estimate.base_total }}</h3>
+
+    <div class="breakdown-box">
+
+      <div class="line">
+        <span>SGST ({{ quotation.final_estimate.sgst_percent }}%)</span>
+        <span>₹ {{ quotation.final_estimate.sgst_amount }}</span>
+      </div>
+
+      <div class="line">
+        <span>CGST ({{ quotation.final_estimate.cgst_percent }}%)</span>
+        <span>₹ {{ quotation.final_estimate.cgst_amount }}</span>
+      </div>
+
+      <div class="line">
+        <span>Platform Fee ({{ quotation.final_estimate.platform_fee_percent }}%)</span>
+        <span>₹ {{ quotation.final_estimate.platform_fee_amount }}</span>
+      </div>
+
+      <div class="line">
+        <span>Transport + Unload Workers Wages</span>
+        <span>₹ {{ quotation.final_estimate.transport_charge }}</span>
+      </div>
+
+      <hr>
+
+      <div class="line final-line">
+        <span>Final Total</span>
+        <span>₹ {{ quotation.final_estimate.final_total }}</span>
+      </div>
+
+    </div>
+  </div>
+
+</div><br>
+<div>
+  <h2 style="color: darkorange;">Important :</h2>
+  <h3 style="font-weight: 500;">⚠️ Market price may change after validity time.
+Please place order before expiry.</h3><br>
+
+<div class="action-section">
+
+<a href="{% url 'manage_quotations_orders' quotation.site.id %}"
+   class="btn btn-back">
+   Back
+</a>
+
+<a href="{% url 'place_order' quotation.id %}"
+   id="placeOrderBtn"
+   class="btn btn-order">
+   Place Order
+</a>
+
+<button
+   id="regenBtn"
+   class="btn btn-regenerate"
+   onclick="openPopup()">
+   Generate New Bill
+</button>
+
+<a href="#"
+   onclick="window.print()"
+   class="btn btn-print">
+   Download Bill
+</a>
+
+</div>
+<div id="regenPopup" class="popup-overlay">
+
+  <div class="popup-box">
+
+    <h3>Generate New Quotation</h3>
+
+    <p class="popup-note">
+    The previous quotation has expired.  
+    You are about to request a <b>new quotation</b> for the same products.
+    Please confirm delivery preference and expected delivery date.
+    The agency will receive a new quotation request and may update the price.
+    <b>"Send The Reply Final Quotation Price In Next Woking Hours".</b>
+    </p>
+
+<form method="POST" action="{% url 'regenerate_quotation_bill' quotation.id %}">
+{% csrf_token %}
+
+<label>Delivery Preference</label>
+<select name="delivery_preference" id="deliveryPref">
+  <option value="">Select delivery preference</option>
+  <option value="within_3days">Within 3 Days</option>
+  <option value="within_week">Within 1 Week</option>
+</select>
+
+<label>Expected Delivery Date</label>
+<input type="date" name="expected_date" id="expectedDate">
+
+<div class="popup-actions">
+
+<button type="button"
+        onclick="closePopup()"
+        class="btn btn-back">
+Back
+</button>
+
+<button type="submit"
+        id="generateBtn"
+        class="btn-generate"
+        disabled>
+Generate Quotation
+</button>
+</div>
+</form>
+
+</div>
+</div>
+<script>
+
+const expiryTime = new Date("{{ quotation.quotation_valid_until|date:'c' }}").getTime();
+
+const countdownElement = document.getElementById("countdown");
+const placeOrderBtn = document.getElementById("placeOrderBtn");
+const regenBtn = document.getElementById("regenBtn");
+
+// default state
+regenBtn.style.pointerEvents = "none";
+regenBtn.style.opacity = "0.5";
+
+const timer = setInterval(function(){
+
+    const now = new Date().getTime();
+    const distance = expiryTime - now;
+
+    if(distance <= 0){
+
+        clearInterval(timer);
+
+        countdownElement.innerHTML = "⚠️ Quotation Expired";
+
+        // disable place order
+        placeOrderBtn.style.pointerEvents = "none";
+        placeOrderBtn.style.opacity = "0.5";
+
+        // enable regenerate button
+        regenBtn.style.pointerEvents = "auto";
+        regenBtn.style.opacity = "1";
+
+        return;
+    }
+
+    const hours = Math.floor((distance % (1000*60*60*24))/(1000*60*60));
+    const minutes = Math.floor((distance % (1000*60*60))/(1000*60));
+    const seconds = Math.floor((distance % (1000*60))/1000);
+
+    countdownElement.innerHTML =
+        "This Quotation expires in : " +
+        hours + "h " + minutes + "m " + seconds + "s";
+
+},1000);
+
+
+
+
+function openPopup(){
+  document.getElementById("regenPopup").style.display="flex";
+}
+
+function closePopup(){
+  document.getElementById("regenPopup").style.display="none";
+}
+
+
+const deliveryPref = document.getElementById("deliveryPref");
+const expectedDate = document.getElementById("expectedDate");
+const generateBtn = document.getElementById("generateBtn");
+
+/* disable past + today date */
+const today = new Date();
+today.setDate(today.getDate() + 1);
+
+const minDate = today.toISOString().split("T")[0];
+expectedDate.setAttribute("min", minDate);
+
+function checkInputs(){
+
+ if(deliveryPref.value !== "" && expectedDate.value !== ""){
+     generateBtn.disabled = false;
+ }
+ else{
+     generateBtn.disabled = true;
+ }
+
+}
+
+deliveryPref.addEventListener("change", checkInputs);
+expectedDate.addEventListener("change", checkInputs);
+</script>
+
+
+
+{% endblock %}

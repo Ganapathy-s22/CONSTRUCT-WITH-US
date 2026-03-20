@@ -1,0 +1,619 @@
+{% extends "engineer_side/engineer_dashboard.html" %}
+{% load static %}
+{% block content %}
+<style>.cart-wrapper{
+  max-width:1600px;
+  margin:20px auto;
+}
+
+.cart-table{
+  width:100%;
+  border-collapse:collapse;
+  background:#fff;
+  box-shadow:0 10px 30px rgba(0,0,0,0.08);
+  border-radius:12px;
+  overflow:hidden;
+}
+
+.cart-table th{
+  background:#0f2b46;
+  color:#fff;
+  padding:14px;
+  text-align:center;
+}
+
+.cart-table td{
+  padding:18px;
+  text-align:center;
+  border-bottom:1px solid #eee;
+}
+
+.highlight{
+  font-weight:bold;
+  color:#0a7d36;
+}
+
+.cart-summary{
+  margin-top:25px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.total-box{
+  font-size:18px;
+}
+
+.quote-btn{
+  background:#e38023;
+  color:#fff;
+  padding:10px 18px;
+  border-radius:6px;
+  text-decoration:none;
+  transition:0.3s;
+}
+
+.quote-btn1{
+  background:#ef8f36;
+  color:#fff;
+  padding:10px 18px;
+  border-radius:6px;
+  text-decoration:none;
+  transition:0.3s;
+}
+
+.quote-btn:hover{
+  background:#e66a00;
+}
+
+.small-btn{
+  font-size:13px;
+}
+
+.big-btn{
+  font-size:16px;
+}
+
+/* ===== MAIN TABS ===== */
+
+.material-tabs{
+  display:flex;
+  background:#ffffff;
+  border-radius:8px;
+  overflow:hidden;
+  box-shadow:0 4px 12px rgba(0,0,0,0.08);
+  margin-bottom:30px;
+}
+
+.material-tab{
+  flex:1;
+  text-align:center;
+  padding:14px 0;
+  text-decoration:none;
+  font-weight:600;
+  color:#0b1c2d;
+  border-right:1px solid #eee;
+  transition:0.3s;
+}
+
+.material-tab:last-child{
+  border-right:none;
+}
+
+.material-tab:hover:not(.active){
+  background:#0b1c2d;
+  color:#fff;
+}
+
+.material-tab.active{
+  background:#0b1c2d;
+  color:#fff;
+}
+
+/* ===== SITE INFO BAR ===== */
+.site-info-bar{
+  background:#fff;
+  padding:20px 25px;
+  border-radius:10px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  margin-bottom:20px;
+}
+
+.site-info-bar h2{
+  margin-bottom:15px;
+  color:#ff7a18;
+}
+
+.site-info-left{
+  display:flex;
+  flex-wrap:wrap;
+  gap:11%;
+}
+
+.site-info-item{
+  display:flex;
+  flex-direction:column;
+}
+
+.site-info-label{
+  font-size:16px;
+  font-weight:600;
+  margin-bottom: 6px;
+  color:#ff7a18;
+  text-transform:uppercase;
+}
+
+.site-info-value{
+  font-weight:600;
+  font-size: 22px;
+  color:#0b1c2d;
+}
+
+.site-status-badge{
+  padding:6px 14px;
+  border-radius:20px;
+  text-align: center;
+  font-size:13px;
+  font-weight:600;
+  color:#fff;
+}
+
+.Planning{ background:#6c757d; }
+.Started{ background:#007bff; }
+.Ongoing{ background:#ff9800; }
+.NearComplete{ background:#9c27b0; }
+.Completed{ background:#28a745; }
+.HandedOver{ background:#20c997; }
+
+/* ===== MODAL BACKGROUND ===== */
+
+.modal{
+display:none;
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,0.65);
+justify-content:center;
+align-items:center;
+z-index:9999;
+animation:fadeIn 0.25s ease;
+}
+
+/* ===== MODAL OVERLAY ===== */
+
+.modal{
+display:none;
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,0.65);
+justify-content:center;
+align-items:center;
+z-index:9999;
+animation:fadeIn 0.25s ease;
+}
+
+
+/* ===== MODAL BOX ===== */
+
+.modal-content{
+background:#ffffff;
+width:450px;
+max-width:92%;
+padding:28px;
+border-radius:12px;
+box-shadow:0 15px 45px rgba(0,0,0,0.25);
+display:flex;
+flex-direction:column;
+gap:14px;
+position:relative;
+animation:scaleIn 0.25s ease;
+}
+
+
+/* ===== HEADER ===== */
+
+.modal-content h3{
+margin:0 0 8px 0;
+font-size:20px;
+font-weight:600;
+color:#0f2b46;
+border-bottom:2px solid #ff7a00;
+padding-bottom:8px;
+}
+
+
+/* ===== LABELS ===== */
+
+.modal-content label{
+font-weight:600;
+font-size:16px;
+color:#0f2b46;
+margin-bottom: 8px;
+}
+
+
+/* ===== INPUTS ===== */
+
+.modal-content select,
+.modal-content input,
+.modal-content textarea{
+  margin-top: 6px;
+width:100%;
+padding:10px 12px;
+border-radius:6px;
+border:1px solid #ccc;
+font-size:14px;
+transition:all 0.2s ease;
+margin-bottom: 8px;
+}
+
+
+/* ===== INPUT FOCUS ===== */
+
+.modal-content select:focus,
+.modal-content input:focus,
+.modal-content textarea:focus{
+border-color:#ff7a00;
+outline:none;
+box-shadow:0 0 0 2px rgba(255,122,0,0.15);
+}
+
+
+/* ===== TEXTAREA ===== */
+
+.modal-content textarea{
+min-height:70px;
+resize:vertical;
+}
+
+
+/* ===== BUTTON SECTION ===== */
+
+.modal-content button{
+border:none;
+padding:9px 16px;
+border-radius:6px;
+font-size:14px;
+cursor:pointer;
+transition:all 0.2s ease;
+}
+
+
+/* BACK BUTTON */
+
+.modal-content button[type="button"]{
+background:#8c8c8c;
+color:white;
+}
+
+.modal-content button[type="button"]:hover{
+background:#6e6e6e;
+}
+
+
+/* SEND BUTTON */
+
+#sendBtn{
+background:#ff7a00;
+color:white;
+font-weight:600;
+}
+
+#sendBtn:hover{
+background:#0f2b46;
+}
+
+
+/* DISABLED BUTTON */
+
+#sendBtn:disabled{
+background:#8f8f8f;
+cursor:not-allowed;
+}
+
+#backbttn {
+  background:#c9290d;
+color:white;
+font-weight:600;
+}
+
+
+/* ===== ANIMATIONS ===== */
+
+@keyframes fadeIn{
+from{opacity:0;}
+to{opacity:1;}
+}
+
+@keyframes scaleIn{
+from{
+transform:scale(0.9);
+opacity:0;
+}
+to{
+transform:scale(1);
+opacity:1;
+}
+}
+
+.alert-success{
+  background:#e6ffed;
+  color:#0f5132;
+  padding:12px;
+  border-radius:8px;
+  margin-bottom:20px;
+}
+</style>
+
+<!-- ===== SITE INFO BAR ===== -->
+<div class="site-info-bar">
+  
+  <div class="site-info-left">
+
+    <h2>Site Details</h2>
+    <div class="site-info-item">
+      <div class="site-info-label">Site Name</div>
+      <div class="site-info-value">{{ site.site_name }}</div>
+    </div>
+
+    <div class="site-info-item">
+      <div class="site-info-label">Project Status</div>
+      <div class="site-status-badge {{ site.status }}">
+        {{ site.get_status_display }}
+      </div>
+    </div>
+
+    <div class="site-info-item">
+      <div class="site-info-label">Address</div>
+      <div class="site-info-value">{{ site.site_address }}</div>
+    </div>
+
+    <div class="site-info-item">
+      <div class="site-info-label">District</div>
+      <div class="site-info-value">{{ site.site_district }}</div>
+    </div>
+
+    <div class="site-info-item">
+      <div class="site-info-label">Pincode</div>
+      <div class="site-info-value">{{ site.site_pincode }}</div>
+    </div>
+
+  </div>
+</div>
+
+<div class="material-tabs">
+
+  <a href="{% url 'search_products' site.id %}"
+     class="material-tab {% if active_tab == 'search' %}active{% endif %}">
+     Search Products
+  </a>
+
+  <a href="{% url 'view_cart' site.id %}"
+     class="material-tab {% if active_tab == 'cart' %}active{% endif %}">
+     Add to Cart
+  </a>
+
+  <a href="{% url 'manage_quotations_orders' site.id %}"
+     class="material-tab {% if active_tab == 'quotation' %}active{% endif %}">
+     Quotation & Order Requests
+  </a>
+
+  <a href="{% url 'confirmed_orders' site.id %}"
+     class="material-tab {% if active_tab == 'orders' %}active{% endif %}">
+     Confirmed Orders
+  </a>
+
+</div>
+                     {% if messages %}
+    {% for message in messages %}
+      <div class="alert-success">
+        {{ message }}
+      </div>
+    {% endfor %}
+  {% endif %}
+<div class="cart-wrapper">
+  <h2>🛒 Site Cart – {{ site.site_name }}</h2><br>
+  {% if cart_items %}
+  {% regroup cart_items by product.agency as agency_groups %}
+{% for agency in agency_groups %}
+<h3 style="margin-top:30px;color:#ff3c00;">
+🏢 Agency Name : {{ agency.grouper.company_name }}
+</h3><br>
+
+<table class="cart-table">
+
+<thead>
+<tr>
+<th>Date</th>
+<th>Product</th>
+<th>Variant</th>
+<th>Size</th>
+<th>Qty</th>
+<th>Avg Price</th>
+<th>Total</th>
+<th>Action</th>
+<th>Remove</th>
+</tr>
+</thead>
+
+<tbody>
+{% for item in agency.list %}
+<tr>
+<td>{{ item.created_at|date:"d M Y" }}</td>
+<td>{{ item.product_name }}</td>
+<td>{{ item.variant }}</td>
+<td>{{ item.weight_or_size }}</td>
+<td>{{ item.quantity }}</td>
+<td>₹ {{ item.average_price }}</td>
+<td class="highlight">₹ {{ item.total_price }}</td>
+<td>
+<button
+class="quote-btn small-btn"
+onclick="openQuotationModal('single','{{ site.id }}','{{ item.id }}')">
+Request Quote
+</button>
+</td>
+<td>
+<a href="{% url 'remove_cart_item' site.id item.id %}"
+class="quote-btn small-btn"
+style="background:red;">
+Remove
+</a>
+</td>
+</tr>
+{% endfor %}
+</tbody>
+</table>
+
+<div style="display:flex;justify-content:flex-end;margin-top:10px;">
+
+<button
+class="quote-btn big-btn"
+onclick="openQuotationModal('agency','{{ site.id }}','{{ agency.grouper.id }}')">
+
+Request {{ agency.grouper.company_name }} Quotation
+</button>
+
+</div>
+
+<br>
+
+{% endfor %}
+
+  {% else %}
+  <br><br>
+    <p class="empty-msg">Your Cart Is Empty. Your Old Quotation Request Available in "Quotation & Order Requests" Tab.</p>
+  {% endif %}
+
+</div>
+</div>
+
+<div id="quotationModal" class="modal">
+
+<div class="modal-content">
+
+<h3>Quotation Request</h3>
+
+<form
+id="quotationForm"
+method="POST"
+action="{% url 'request_quotation' site.id %}">
+
+{% csrf_token %}
+
+<input type="hidden" name="item_id" id="modal_item_id">
+<input type="hidden" name="agency_id" id="modal_agency_id">
+
+
+<h4 style="color: #28a745;">Preferred delivery Time choose it wisely (maximum big stock with low time duriation have high probability of "Rejection"),but you can try "if you are so urgent means" </h4><br> 
+<label>Preferred Delivery Time</label>
+
+<select name="delivery_preference" id="delivery_pref" required>
+<option value="">Select</option>
+<option value="urgent(1-2days)">Urgent (1-2 days)</option>
+<option value="within_3days">Within 3 days</option>
+<option value="within_7days">Within 1 week</option>
+<option value="flexible">Flexible</option>
+</select>
+
+<label>Expected Delivery Date</label>
+
+<input
+type="date"
+name="expected_date"
+id="expected_date"
+required>
+
+<div style="display:flex;gap:10px;justify-content:flex-end;margin-top:15px;">
+
+<button type="button" onclick="closeQuotationModal()">
+Back
+</button>
+
+<button type="submit" id="sendBtn" disabled>
+Request Send
+</button>
+
+</form>
+</div><h4 style="color: #28a745;">AFter Clicking the request sendbutton wait for while it will take to you quotation Bill page </h4>
+</div>
+</div>
+
+<script>
+
+function openQuotationModal(type,site,id){
+
+requestType = type;
+siteId = site;
+itemId = id;
+
+document.getElementById("quotationModal").style.display="flex";
+
+if(type=="single"){
+
+document.getElementById("modal_item_id").value=id;
+document.getElementById("modal_agency_id").value="";
+
+}
+
+else if(type=="agency"){
+
+document.getElementById("modal_agency_id").value=id;
+document.getElementById("modal_item_id").value="";
+
+}
+
+}
+
+function closeQuotationModal(){
+
+document.getElementById("quotationModal").style.display="none";
+
+}
+
+
+document.addEventListener("DOMContentLoaded",function(){
+
+const form = document.getElementById("quotationForm");
+const sendBtn = document.getElementById("sendBtn");
+
+const pref = document.getElementById("delivery_pref");
+const date = document.getElementById("expected_date");
+
+
+// disable past dates
+const today = new Date().toISOString().split("T")[0];
+date.min = today;
+
+
+// enable send button only when fields filled
+function checkInputs(){
+
+if(pref.value && date.value){
+
+sendBtn.disabled=false;
+
+}else{
+
+sendBtn.disabled=true;
+
+}
+
+}
+
+pref.addEventListener("change",checkInputs);
+date.addEventListener("change",checkInputs);
+
+
+// dynamic action url
+
+
+});
+
+</script>
+{% endblock %}

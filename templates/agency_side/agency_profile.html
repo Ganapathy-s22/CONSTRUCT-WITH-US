@@ -1,0 +1,346 @@
+{% extends "agency_side/agency_dashboard.html" %}
+{% load static %}
+
+{% block title %}Agency Profile{% endblock %}
+{% block extra_css %}
+<style>
+  /* ===== RESET ===== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Oswald", sans-serif;
+}
+
+/* ===== DASHBOARD LAYOUT ===== */
+body {
+  background: #f5f7fa;
+}
+
+
+
+/* dashboard height minus topbar */
+.dashboard {
+  display: flex;
+  height: calc(100vh - 60px);
+}
+
+.dashboard {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* ===== SIDEBAR ===== */
+
+.logo {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.menu {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.menu-item {
+  text-decoration: none;
+  color: #ffffff;
+  padding: 12px 15px;
+  border-radius: 6px;
+}
+
+.menu-item.active,
+.menu-item:hover {
+  background: #ff7a18;
+}
+
+.sidebar-bottom {
+  padding: 20px;
+}
+
+.logout {
+  display: block;
+  text-align: center;
+  background: #c0392b;
+  color: #ffffff;
+  padding: 12px;
+  border-radius: 6px;
+  text-decoration: none;
+}
+
+/* ===== MAIN CONTENT ===== */
+.main-content {
+  width: 85%;
+  padding: 40px;
+}
+
+.main-content h1 {
+  color: #0b1c2d;
+  margin-bottom: 5px;
+}
+
+.subtitle {
+  color: #555;
+  margin-bottom: 30px;
+}
+
+/* ===== PROFILE CARD ===== */
+.profile-card {
+  background: #ffffff;
+  padding: 30px;
+  border-radius: 2px;
+  box-shadow: 0 8px 18px rgba(0,0,0,0.06);
+}
+
+/* HEADER SECTION */
+.profile-header {
+  display: flex;
+  gap: 40px;
+}
+
+/* ===== PROFILE IMAGE UPLOAD ===== */
+.profile-pic {
+  position: relative;
+  width: 400px;
+ 
+}
+
+.profile-pic img {
+  width: 400px;
+  height: 400px;
+  border-radius: 8px;   /* square with slight curve */
+  object-fit: cover;
+  border : 3px solid #ff7a18;
+  cursor: pointer;
+}
+
+
+/* Hide file input */
+.profile-pic input[type="file"] {
+  display: none;
+}
+
+/* Upload text overlay */
+.upload-text {
+  position: absolute;
+  bottom: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.6);
+  color: #ffffff;
+  font-size: 13px;
+  padding: 4px 10px;
+  border-radius: 12px;
+  pointer-events: none;
+}
+
+/* FORM AREA */
+.profile-form {
+  flex: 1;
+}
+
+.form-group {
+  margin-bottom: 18px;
+}
+
+.form-group1 {
+  margin-bottom: 18px;
+}
+
+.form-group label {
+  display: block;
+  font-weight: 300;
+  margin-left: 50px;
+  margin-bottom: 6px;
+  color: #636161;
+}
+
+.form-group input,
+.form-group textarea {
+    margin-left: 50px;
+  width: 90%;
+  padding: 10px;
+  border: 1px solid #060606;
+  border-radius: 6px;
+}
+
+.form-group1 input,
+.form-group1 textarea {
+    margin-left: 50px;
+  width: 90%;
+  padding: 10px;
+  border: 1px solid #959595;
+  border-radius: 6px;
+}
+.form-group1 label {
+  display: block;
+  margin-left: 50px;
+  margin-bottom: 6px;
+  color: #000000;
+}
+
+.form-group1 input,
+.form-group1 textarea {
+    margin-left: 50px;
+  width: 90%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+textarea {
+  resize: none;
+  height: 80px;
+}
+
+/* ===== ACTION BUTTONS ===== */
+.action-buttons {
+  margin-top: 30px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 15px;
+}
+
+.btn {
+  padding: 10px 22px;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  cursor: pointer;
+}
+.edit-btn {
+    background: rgb(155, 138, 235);
+}
+
+.cancel-btn {
+  background: #bdc3c7;
+}
+
+.save-btn {
+  background: #ff7a18;
+  color: #ffffff;
+}
+
+.save-btn:hover {
+  background: #e66a0f;
+}
+
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 900px) {
+  .sidebar {
+    width: 25%;
+  }
+
+  .main-content {
+    width: 75%;
+  }
+
+  .profile-header {
+    flex-direction: column;
+    align-items: center;
+  }
+}
+</style>
+
+{% endblock %}
+
+
+{% block content %}
+
+<h1>Agency Profile</h1>
+<p class="subtitle">Manage your agency information</p>
+
+<form method="post" id="profileForm">
+  {% csrf_token %}
+
+  <div class="profile-card">
+
+    <div class="profile-form">
+
+      <!-- NOT EDITABLE -->
+      <div class="form-group1">
+        <label>Agency Name:</label>
+        <input type="text" value="{{ agency.company_name }}" readonly>
+      </div>
+
+      <div class="form-group1">
+        <label>GST Number:</label>
+        <input type="text" value="{{ agency.gst_number }}" readonly>
+      </div>
+
+      <!-- EDITABLE -->
+      <div class="form-group">
+        <label>Agency Email:</label>
+        <input type="email" name="owner_email"
+               value="{{ agency.owner_email }}"
+               class="editable" readonly>
+      </div>
+
+      <div class="form-group">
+        <label>Agency Contact Number:</label>
+        <input type="text" name="company_phone"
+               value="{{ agency.company_phone }}"
+               class="editable" readonly>
+      </div>
+
+      <div class="form-group">
+        <label>Address:</label>
+        <textarea name="company_address"
+                  class="editable"
+                  readonly>{{ agency.company_address }}</textarea>
+      </div>
+
+      <div class="form-group1">
+        <label>Pincode:</label>
+        <input type="text" value="{{ agency.company_pincode }}" readonly>
+      </div>
+
+      <p id="editNote" style="display:none;color:#ff7a18;margin-top:10px;">
+        ⚠️ You can edit only Email, Phone number and Address
+      </p>
+
+    </div>
+  </div>
+
+  <div class="action-buttons">
+    <button type="button" class="btn edit-btn" onclick="enableEdit()">Edit Profile</button>
+    <button type="button" class="btn cancel-btn" onclick="cancelEdit()">Cancel</button>
+    <button type="submit" class="btn save-btn" id="saveBtn" disabled>Save All</button>
+  </div>
+
+</form>
+
+{% endblock %}
+
+
+
+{% block extra_js %}
+<script>
+const editableFields = document.querySelectorAll(".editable");
+const saveBtn = document.getElementById("saveBtn");
+const editNote = document.getElementById("editNote");
+
+let originalValues = {};
+
+function enableEdit() {
+  editableFields.forEach(el => {
+    originalValues[el.name] = el.value;
+    el.removeAttribute("readonly");
+  });
+  saveBtn.disabled = false;
+  editNote.style.display = "block";
+}
+
+function cancelEdit() {
+  editableFields.forEach(el => {
+    el.value = originalValues[el.name];
+    el.setAttribute("readonly", true);
+  });
+  saveBtn.disabled = true;
+  editNote.style.display = "none";
+}
+</script>
+{% endblock %}
+

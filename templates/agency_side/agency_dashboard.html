@@ -1,0 +1,250 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>{% block title %}Agency Dashboard{% endblock %}</title>
+
+    <!-- Favicon -->
+<link rel="icon" type="image/x-icon" href="{% static 'images/favicon/favicon.ico' %}">
+
+<link rel="icon" type="image/png" sizes="16x16" href="{% static 'images/favicon/favicon-16x16.png' %}">
+
+<link rel="icon" type="image/png" sizes="32x32" href="{% static 'images/favicon/favicon-32x32.png' %}">
+
+<link rel="apple-touch-icon" sizes="180x180" href="{% static 'images/favicon/apple-touch-icon.png' %}">
+
+<link rel="icon" type="image/png" sizes="192x192" href="{% static 'images/favicon/android-chrome-192x192.png' %}">
+
+<link rel="icon" type="image/png" sizes="512x512" href="{% static 'images/favicon/android-chrome-512x512.png' %}">
+
+<link rel="manifest" href="{% static 'images/favicon/site.webmanifest' %}">
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Oswald", sans-serif;
+    }
+
+    /* TOP BAR */
+    .topbar {
+      height: 80px;
+      width: 100%;
+      background: #0b1c2d;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+    }
+
+    /* DASHBOARD BODY */
+    .dashboard-container {
+      display: flex;
+      height: calc(100vh - 60px);
+    }
+
+    /* SIDEBAR */
+    .sidebar {
+      width: 15%;
+      background: #0b1c2d;
+      color: #fff;
+      padding: 20px;
+    }
+
+    .logo {
+      margin-top: 20px;
+      text-align: center;
+      margin-bottom: 30px;
+      font-size: 30px;
+      color: #ff6a00;
+    }
+
+    .menu {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .menu-item {
+      text-align: center;
+      text-decoration: none;
+      font-size: 18px;
+      color: #fff;
+      padding: 12px;
+      border-radius: 6px;
+    }
+
+    .menu-item:hover,
+    .menu-item.active {
+      background: #ff7a18;
+    }
+
+    /* MAIN AREA */
+    .main-content {
+      width: 85%;
+      padding: 40px;
+      background: #f5f6f8;
+      overflow-y: auto;
+    }
+
+    .main-area {
+  width: 85%;
+  background: #f5f6f8;
+}
+
+    .logout-btn {
+      background: #ff6a00;
+      border: none;
+      color: #fff;
+      padding: 6px 14px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    /* ===== LOGOUT MODAL BACKDROP ===== */
+.logout-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(11, 28, 45, 0.75);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+/* ===== MODAL BOX ===== */
+.logout-box {
+  background: #ffffff;
+  padding: 30px;
+  width: 360px;
+  border-radius: 14px;
+  text-align: center;
+  border-top: 4px solid #ff7a18;
+}
+
+.logout-box h3 {
+  color: #0b1c2d;
+  margin-bottom: 10px;
+}
+
+.logout-box p {
+  color: #1f3b5b;
+  margin-bottom: 25px;
+}
+
+/* ===== BUTTONS ===== */
+.logout-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.btn-back {
+  flex: 1;
+  background: #ffffff;
+  border: 1px solid #0b1c2d;
+  color: #0b1c2d;
+  padding: 7px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.btn-logout {
+  flex: 1;
+  background: #ff7a18;
+  color: #ffffff;
+  padding: 10px;
+  border-radius: 6px;
+  text-decoration: none;
+  text-align: center;
+}
+
+.btn-logout:hover {
+  background: #ff9f50;
+}
+  </style>
+
+  {% block extra_css %}{% endblock %}
+</head>
+
+<body>
+
+<!-- TOP BAR -->
+<header class="topbar">
+  <h2 class="logo">🏭 Agency Dashboard</h2>
+  <button class="logout-btn" onclick="openLogoutModal()">Logout</button>
+
+</header>
+
+<!-- DASHBOARD -->
+<div class="dashboard-container">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <nav class="menu">
+      <a href="{% url 'agency_dash' %}" class="menu-item">Home</a>
+      <a href="{% url 'agency_profile' %}" class="menu-item"> Agency Profile & Details</a>
+      <a href="{% url 'agency_products' %}" class="menu-item">Manage Products</a>
+      <a href="{% url 'manage_requested_replies' %}" class="menu-item">Quotation Requests</a>
+      <a href="{% url 'agency_orders' %}" class="menu-item">Received Orders</a>
+    </nav>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main class="main-content">
+    {% block content %}
+     <div class="main-area">
+
+    <!-- CONTENT -->
+    <section class="content">
+      <h3>Hello Agency</h3>
+      <p>Select an option from the left menu to manage the platform.</p>
+    </section>
+
+  </div>
+    {% endblock %}
+  </main>
+
+</div>
+
+<!-- LOGOUT MODAL -->
+<div id="logoutModal" class="logout-modal">
+  <div class="logout-box">
+
+    <h3>Confirm Logout</h3>
+    <p>Are you sure you want to logout?</p>
+
+    <div class="logout-actions">
+      <button class="btn-back" onclick="closeLogoutModal()">Back</button>
+      <form method="POST" action="{% url 'agency_logout' %}">
+  {% csrf_token %}
+  <button type="submit" class="btn-logout">
+    Logout
+  </button>
+</form>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  function openLogoutModal() {
+    document.getElementById("logoutModal").style.display = "flex";
+  }
+
+  function closeLogoutModal() {
+    document.getElementById("logoutModal").style.display = "none";
+  }
+</script>
+
+
+
+{% block extra_js %}{% endblock %}
+</body>
+</html>

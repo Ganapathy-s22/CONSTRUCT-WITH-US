@@ -1,0 +1,81 @@
+{% extends "engineer_side/engineer_dashboard.html" %}
+{% load static %}
+{% block content %}
+
+<style>
+
+/* ===== SUCCESS WRAPPER ===== */
+.success-wrapper{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    height:70vh;
+}
+
+/* ===== CARD ===== */
+.success-card{
+    background:#ffffff;
+    padding:50px 60px;
+    border-radius:15px;
+    box-shadow:0 10px 40px rgba(0,0,0,0.08);
+    text-align:center;
+    animation:fadeIn 0.8s ease-in-out;
+}
+
+/* ===== ICON ===== */
+.success-icon{
+    font-size:70px;
+    color:#28a745;
+    animation:pop 0.6s ease-in-out;
+}
+
+/* ===== TEXT ===== */
+.success-card h2{
+    margin-top:20px;
+    color:#0b1c2d;
+}
+
+.success-card p{
+    margin-top:10px;
+    color:#555;
+    font-size:15px;
+}
+
+/* ===== ANIMATIONS ===== */
+@keyframes pop{
+    0%{ transform:scale(0.5); opacity:0; }
+    100%{ transform:scale(1); opacity:1; }
+}
+
+@keyframes fadeIn{
+    from{ opacity:0; transform:translateY(20px); }
+    to{ opacity:1; transform:translateY(0); }
+}
+
+</style>
+
+<div class="success-wrapper">
+    <div class="success-card">
+
+        <div class="success-icon">
+            ✓
+        </div>
+
+        <h2>Your Order Placed Successfully!</h2>
+
+        <p>Please check it in Confirmed Orders section.</p>
+
+        <p style="margin-top:20px; font-size:13px; color:#888;">
+            Redirecting in 5 seconds...
+        </p>
+
+    </div>
+</div>
+
+<script>
+    setTimeout(function(){
+        window.location.href = "{% url 'manage_quotations_orders' site_id %}";
+    }, 5000);
+</script>
+
+{% endblock %}

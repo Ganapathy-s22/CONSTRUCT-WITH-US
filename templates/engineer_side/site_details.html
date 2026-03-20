@@ -1,0 +1,241 @@
+{% extends "engineer_side/engineer_dashboard.html" %}
+{% load static %}
+{% block content %}
+
+<style>
+
+.details-wrapper{
+  max-width:1000px;
+  margin:auto;
+  background:#ffffff;
+  padding:30px;
+  border-radius:12px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+}
+
+/* Header */
+.details-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:25px;
+}
+
+.details-header h2{
+  font-weight:700;
+  color:#0b1c2d;
+}
+
+.back-btn{
+  background:#ff7a18;
+  color:#fff;
+  padding:8px 16px;
+  border-radius:6px;
+  text-decoration:none;
+  font-size:14px;
+}
+
+/* Section Titles */
+.section-title{
+  margin-top:25px;
+  font-weight:700;
+  color:#ff7a18;
+  border-bottom:2px solid #eee;
+  padding-bottom:5px;
+}
+
+/* Grid Layout */
+.details-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:20px;
+  margin-top:20px;
+}
+
+.form-group{
+  display:flex;
+  flex-direction:column;
+}
+
+.form-group label{
+  font-weight:600;
+  margin-bottom:5px;
+  font-size:14px;
+}
+
+.readonly-box{
+  background:#f5f5f5;
+  padding:10px;
+  border-radius:6px;
+  border:1px solid #ddd;
+  font-size:14px;
+}
+
+.full-width{
+  grid-column:1 / -1;
+}
+
+.file-link{
+  color:#007bff;
+  text-decoration:none;
+}
+
+.status-badge{
+  display:inline-block;
+  padding:5px 10px;
+  border-radius:20px;
+  font-size:12px;
+  color:#fff;
+  background:#28a745;
+}
+
+</style>
+
+<div class="details-wrapper">
+
+  <!-- HEADER -->
+  <div class="details-header">
+    <h2>Site Details</h2>
+    <a href="{% url 'manage_all_site' %}" class="back-btn">
+      Back
+    </a>
+  </div>
+
+  <!-- OWNER DETAILS -->
+  <div class="section-title">Owner Information</div>
+
+  <div class="details-grid">
+
+    <div class="form-group">
+      <label>Owner Name</label>
+      <div class="readonly-box">
+        {{ site.owner.owner_name }}
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Owner Phone</label>
+      <div class="readonly-box">
+        {{ site.owner.owner_phone }}
+      </div>
+    </div>
+
+  </div>
+
+  <!-- SITE DETAILS -->
+  <div class="section-title">Construction Site Information</div>
+
+  <div class="details-grid">
+
+    <div class="form-group">
+      <label>Site Name</label>
+      <div class="readonly-box">
+        {{ site.site_name }}
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Category</label>
+      <div class="readonly-box">
+        {{ site.get_category_display }}
+        {% if site.category == "others" %}
+          ({{ site.other_category }})
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Total Sq.ft</label>
+      <div class="readonly-box">
+        {{ site.total_sqft }}
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Building Area Sq.ft</label>
+      <div class="readonly-box">
+        {{ site.building_area_sqft }}
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Approximate Budget</label>
+      <div class="readonly-box">
+        ₹ {{ site.approximate_budget }}
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Status</label>
+      <div class="readonly-box">
+        <span class="status-badge">
+          {{ site.get_status_display }}
+        </span>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Start Date</label>
+      <div class="readonly-box">
+        {{ site.start_date }}
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>End Date</label>
+      <div class="readonly-box">
+        {{ site.end_date }}
+      </div>
+    </div>
+
+    <div class="form-group full-width">
+      <label>Description</label>
+      <div class="readonly-box">
+        {{ site.description|default:"-" }}
+      </div>
+    </div>
+
+    <div class="form-group full-width">
+      <label>Address</label>
+      <div class="readonly-box">
+        {{ site.site_address }}, 
+        {{ site.site_district }}, 
+        {{ site.site_state }} - 
+        {{ site.site_pincode }}
+      </div>
+    </div>
+
+    {% if site.site_map %}
+    <div class="form-group">
+      <label>Site Map</label>
+      <div class="readonly-box">
+        <a href="{{ site.site_map.url }}" target="_blank" class="file-link">
+          View Site Map
+        </a>
+      </div>
+    </div>
+    {% endif %}
+
+    {% if site.blueprint_file %}
+    <div class="form-group">
+      <label>Blueprint</label>
+      <div class="readonly-box">
+        <a href="{{ site.blueprint_file.url }}" target="_blank" class="file-link">
+          View Blueprint
+        </a>
+      </div>
+    </div>
+    {% endif %}
+
+    <div class="form-group">
+      <label>Created At</label>
+      <div class="readonly-box">
+        {{ site.created_at }}
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+{% endblock %}

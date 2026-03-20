@@ -1,0 +1,192 @@
+{% extends "agency_side/agency_dashboard.html" %}
+{% load static %}
+{% block content %}
+
+<style>
+/* SAME CSS YOU PROVIDED — NO CHANGE */
+.quote-badge{
+  background:#ffc107;
+  padding:8px 16px;
+  display:inline-block;
+  font-weight:bold;
+  border-radius:20px;
+  margin-bottom:20px;
+}
+
+.invoice-container{
+  background:#fff;
+  padding:40px;
+  border-radius:10px;
+  box-shadow:0 4px 20px rgba(0,0,0,0.08);
+}
+
+.invoice-header{
+  display:flex;
+  justify-content:space-between;
+}
+
+.details-section{
+  display:flex;
+  justify-content:space-between;
+  margin:30px 0;
+}
+
+.invoice-table{
+  width:100%;
+  border-collapse:collapse;
+  margin-top:20px;
+}
+
+.invoice-table th,
+.invoice-table td{
+  border-bottom:1px solid #ddd;
+  padding:12px;
+  text-align:left;
+}
+
+.invoice-table th{
+  background:#f5f5f5;
+}
+
+.total-box{
+  text-align:right;
+  margin-top:20px;
+}
+
+.invoice-actions{
+  margin-top:20px;
+  text-align:center;
+}
+
+.btn-download{
+  background:#28a745;
+  padding:10px 20px;
+  color:#fff;
+  border-radius:6px;
+  text-decoration:none;
+  margin-right:15px;
+}
+
+.btn-back{
+  background:#6c757d;
+  padding:10px 20px;
+  color:#fff;
+  border-radius:6px;
+  text-decoration:none;
+}
+
+/* PRINT MODE */
+@media print {
+
+  body * {
+      visibility: hidden;
+  }
+
+  .invoice-container,
+  .invoice-container * {
+      visibility: visible;
+  }
+
+  .invoice-container {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+  }
+
+  .invoice-actions,
+  .quote-badge {
+      display: none !important;
+  }
+}
+
+
+
+</style>
+
+<div class="quote-badge">Requested Quotation</div>
+
+<div class="invoice-container">
+
+  <div class="invoice-header">
+    <div>
+      <h2>Request Invoice</h2>
+    </div>
+
+    <div>
+      <p><strong>Request ID:</strong> #{{ quotation.id }}</p>
+      <p><strong>Date:</strong> {{ quotation.created_at|date:"d M Y, h:i A" }}</p>
+    </div>
+  </div>
+
+  <hr><br>
+        <div class="delivery_det">
+    <h4>Delivery Prefferd :       {{ quotation.get_delivery_preference_display }}</h4>  
+    <h4> Delivery Expected Date : {{ quotation.expected_delivery_date|date:"d M Y" }}</h4>  </div>
+
+  <div class="details-section">
+
+
+    <div>
+      <h4>Engineer Details</h4>
+      <p>Name: {{ quotation.engineer.engineer_profile.full_name }}</p>
+      <p>Phone: {{ quotation.engineer.engineer_profile.phone_number }}</p>
+      <p>Address: {{ quotation.site.site_address }}</p>
+      <p>{{ quotation.site.site_district }} - {{ quotation.site.site_pincode }}</p>
+    </div>
+
+    <div>
+      <h4>Agency Details</h4>
+      {% if quotation.agency %}
+        <p>{{ quotation.agency.company_name }}</p>
+        <p>{{ quotation.agency.company_address }}</p>
+        <p>{{ quotation.agency.company_district }} - {{ quotation.agency.company_pincode }}</p>
+      {% else %}
+        <p>No agency assigned</p>
+      {% endif %}
+    </div>
+
+  </div>
+
+  <table class="invoice-table">
+    <thead>
+      <tr>
+        <th>Product</th>
+        <th>Qty</th>
+        <th>Estimated Price</th>
+        <th>Total</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      {% for item in quotation.items.all %}
+      <tr>
+        <td>{{ item.product_name }}</td>
+        <td>{{ item.quantity }}</td>
+        <td>₹ {{ item.price }}</td>
+        <td>₹ {{ item.total_price }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <div class="total-box">
+    <h3>Estimated Total Cost: ₹ {{ quotation.estimated_total }}</h3>
+  </div>
+
+</div>
+
+<div class="invoice-actions">
+  <a href="#"
+     onclick="window.print()"
+     class="btn-download">
+     Download Request
+  </a>
+
+  <a href="{% url 'manage_requested_replies' %}"
+     class="btn-back">
+     Back
+  </a>
+</div>
+
+{% endblock %}

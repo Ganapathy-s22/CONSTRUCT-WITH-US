@@ -1,0 +1,303 @@
+{% extends "engineer_side/engineer_dashboard.html" %}
+{% block content %}
+
+<style>
+
+.material-wrapper{
+  max-width:1400px;
+  margin:auto;
+  background:#ffffff;
+  padding:30px;
+  border-radius:10px;
+  box-shadow:0 6px 18px rgba(0,0,0,0.08);
+}
+.site-info-bar{
+  background:#fff;
+  padding:20px 25px;
+  border-radius:10px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  margin-bottom:20px;
+}
+
+.site-info-bar h2{
+  margin-bottom:15px;
+  color:#ff7a18;
+}
+
+.site-info-left{
+  display:flex;
+  flex-wrap:wrap;
+  gap:11%;
+}
+
+.site-info-item{
+  display:flex;
+  flex-direction:column;
+}
+
+.site-info-label{
+  font-size:16px;
+  font-weight:600;
+  margin-bottom: 6px;
+  color:#ff7a18;
+  text-transform:uppercase;
+}
+
+.site-info-value{
+  font-weight:600;
+  font-size: 22px;
+  color:#0b1c2d;
+}
+
+.site-status-badge{
+  padding:6px 14px;
+  border-radius:20px;
+  text-align: center;
+  font-size:13px;
+  font-weight:600;
+  color:#fff;
+}
+
+.Planning{ background:#6c757d; }
+.Started{ background:#007bff; }
+.Ongoing{ background:#ff9800; }
+.NearComplete{ background:#9c27b0; }
+.Completed{ background:#28a745; }
+.HandedOver{ background:#20c997; }
+/* ===== HEADER ===== */
+.header-top{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:25px;
+}
+
+.header-top h2{
+  font-size:26px;
+  font-weight:700;
+  color:#0b1c2d;
+}
+
+.back-btn{
+  background:#dc3545;
+  color:#fff;
+  padding:8px 16px;
+  text-decoration:none;
+  border-radius:6px;
+  font-weight:600;
+  transition:0.3s;
+}
+
+.back-btn:hover{
+  background:#b02a37;
+}
+
+/* ===== TABS ===== */
+.material-tabs{
+  display:flex;
+  background:#f8f9fa;
+  
+  border-radius:2px;
+  overflow:hidden;
+  margin-bottom:25px;
+  border:1px solid #eee;
+}
+
+.material-tab{
+  flex:1;
+  text-align:center;
+  padding:14px;
+  font-weight:600;
+  font-size:14px;
+  color:#0b1c2d;
+  text-decoration: none;
+  border-right:1px solid #e0e0e0;
+  background:#ffffff;
+}
+
+.material-tab:last-child{
+  border-right:none;
+}
+
+.material-tab:hover{
+  background:#0b1c2d;
+  color:#fff;
+}
+
+/* ===== CONTENT BOX ===== */
+.content-box{
+  background:#f4f6f9;
+  padding:25px;
+  border-radius:8px;
+}
+
+.content-section{
+  margin-bottom:25px;
+}
+
+.content-section h3{
+  font-size:24px;
+  font-weight:700;
+  color:#ff7a18;
+  margin-bottom:10px;
+}
+
+.content-section p{
+  font-size:18px;
+  line-height:1.7;
+  color:#444;
+}
+
+</style>
+
+<!-- ===== SITE INFO BAR ===== -->
+<div class="site-info-bar">
+      
+  <div class="site-info-left">
+       <h2>Site Details</h2>
+    <div class="site-info-item">
+      <div class="site-info-label">Site Name</div>
+      <div class="site-info-value">
+        {{ site.site_name }}
+      </div>
+    </div>
+
+    <div class="site-info-item">
+      <div class="site-info-label">Project Status</div>
+      <div class="site-status-badge {{ site.status }}">
+        {{ site.get_status_display }}
+      </div>
+    </div>
+
+    <div class="site-info-item">
+      <div class="site-info-label">Site Address</div>
+      <div class="site-info-value">
+        {{ site.site_address }}
+      </div>
+    </div>
+
+    <div class="site-info-item">
+      <div class="site-info-label">District</div>
+      <div class="site-info-value">
+        {{ site.site_district }}
+      </div>
+    </div>
+
+    <div class="site-info-item">
+      <div class="site-info-label">Pincode</div>
+      <div class="site-info-value">
+        {{ site.site_pincode }}
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+
+<div class="material-tabs">
+
+  <a href="{% url 'search_products' site.id %}"
+     class="material-tab {% if active_tab == 'search' %}active{% endif %}">
+     Search Products
+  </a>
+
+  <a href="{% url 'view_cart' site.id %}"
+     class="material-tab {% if active_tab == 'cart' %}active{% endif %}">
+     Add to Cart
+  </a>
+
+  <a href="{% url 'manage_quotations_orders' site.id %}"
+     class="material-tab {% if active_tab == 'quotation' %}active{% endif %}">
+     Quotation & Order Requests
+  </a>
+
+  <a href="{% url 'confirmed_orders' site.id %}"
+     class="material-tab {% if active_tab == 'orders' %}active{% endif %}">
+     Confirmed Orders
+  </a>
+
+</div>
+
+<div class="material-wrapper">
+
+  
+
+  <!-- ===== HEADER ===== -->
+  <div class="header-top">
+    <h2>Manage Site Construction Materials</h2>
+    <a href="{% url 'manage_all_site' %}" class="back-btn">
+      ← Back to All Sites
+    </a>
+  </div>
+
+
+  <!-- ===== TABS ===== -->
+
+  <!-- ===== CONTENT ===== -->
+  <div class="content-box">
+
+    <!-- SEARCH PRODUCTS -->
+    <div class="content-section">
+      <h3>1️⃣ Search Products</h3>
+      <p>
+        Engineers can search construction materials based on the Site’s
+        <strong>District and Pincode</strong>. This ensures that only
+        locally available suppliers and agencies are shown.
+      </p>
+      <p>
+        You can filter products by category, price range, and availability.
+        This helps in selecting materials that suit the site's budget
+        and project requirements.
+      </p>
+    </div>
+
+
+    <!-- ADD TO CART -->
+    <div class="content-section">
+      <h3>2️⃣ Add to Cart</h3>
+      <p>
+        After selecting required products, engineers can add items
+        to the site-specific cart.
+      </p>
+      <p>
+        Each site will maintain its own cart to ensure materials
+        are tracked separately for different projects.
+        Quantities can be modified before sending quotation requests.
+      </p>
+    </div>
+
+
+    <!-- QUOTATION & REQUEST -->
+    <div class="content-section">
+      <h3>3️⃣ Quotation & Order Requests</h3>
+      <p>
+        Engineers can request quotations from suppliers for the
+        selected cart items.
+      </p>
+      <p>
+        Suppliers will respond with pricing and availability.
+        Engineers can review quotations and approve or reject
+        based on budget and project timeline.
+      </p>
+    </div>
+
+
+    <!-- CONFIRMED ORDERS -->
+    <div class="content-section">
+      <h3>4️⃣ Confirmed Orders</h3>
+      <p>
+        Once quotation is approved, orders move to the
+        <strong>Confirmed Orders</strong> section.
+      </p>
+      <p>
+        Here engineers can track delivery status, payment mode,
+        dispatch updates, and completion records for each site.
+      </p>
+    </div>
+
+  </div>
+
+</div>
+
+{% endblock %}

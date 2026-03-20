@@ -1,0 +1,259 @@
+{% extends "engineer_side/engineer_dashboard.html" %}
+{% load static %}
+{% block content %}
+
+<style>
+
+.site-wrapper{
+  max-width:1100px;
+  margin:auto;
+}
+
+.wrapper{
+  max-width:1100px;
+  margin:auto;
+}
+
+/* ===== TOP TABS ===== */
+.site-tabs{
+  display:flex;
+  background:#ffffff;
+  border-radius:8px;
+  overflow:hidden;
+  box-shadow:0 4px 12px rgba(0,0,0,0.08);
+  margin-bottom:30px;
+}
+
+.site-tab{
+  flex:1;
+  text-align:center;
+  padding:14px 0;
+  text-decoration:none;
+  font-weight:600;
+  color:#0b1c2d;
+  border-right:1px solid #eee;
+  transition:0.3s;
+}
+
+.site-tab:last-child{
+  border-right:none;
+}
+
+.site-tab:hover:not(.active){
+  background:#0b1c2d;
+  color:#fff;
+}
+
+.site-tab.active{
+  background:#0b1c2d;
+  color:#fff;
+}
+
+
+/* ===== SEARCH BAR ===== */
+.search-bar{
+  display:flex;
+  gap:10px;
+  margin-bottom:25px;
+}
+
+.search-bar input{
+  flex:1;
+  padding:15px;
+  border:1px solid #ccc;
+  border-radius:6px;
+}
+
+.search-bar button{
+  background:#ff7a18;
+  color:#fff;
+  border:none;
+  padding:10px 20px;
+  border-radius:6px;
+  cursor:pointer;
+}
+
+/* ===== SITE ROW ===== */
+.site-row{
+  background:#ffffff;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:30px 20px;
+  border-radius:10px;
+  box-shadow:8px 12px 16px rgba(1, 9, 62, 0.08);
+  margin-bottom:15px;
+  transition:0.3s;
+}
+
+.site-row:hover{
+  transform:translateY(-2px);
+}
+
+.site-left{
+  display:flex;
+  align-items:center;
+  gap:20px;
+}
+
+.site-name{
+  font-weight:700;
+  font-size:22px;
+}
+
+.site-category{
+  font-size:16px;
+  font-weight: 600;
+  color:#e50808;
+}
+
+.badge{
+  padding:5px 14px;
+  border-radius:20px;
+  font-size:14px;
+  color:#fff;
+}
+
+/* Status Colors */
+.Planning{ background:#6c757d; }
+.Started{ background:#007bff; }
+.Ongoing{ background:#ff9800; }
+.NearComplete{ background:#9c27b0; }
+.Completed{ background:#28a745; }
+.HandedOver{ background:#20c997; }
+
+/* ===== 3 DOT MENU ===== */
+.dropdown{
+  position:relative;
+  padding:6px 10px;
+  background-color: #bfc4c8;
+  border-radius: 6px;
+}
+
+.menu-btn{
+  background:none;
+  border:black;
+  font-size:26px;
+  cursor:pointer;
+}
+
+.dropdown-content{
+  display:none;
+  position:absolute;
+  right:0;
+  background:#fff;
+  min-width:300px;
+  min-height: 100px;
+  box-shadow:0 6px 15px rgba(0,0,0,0.15);
+  border-radius:6px;
+  overflow:hidden;
+  z-index:10;
+}
+
+.dropdown-content a{
+  display:block;
+  padding:10px;
+  text-decoration:none;
+  margin-bottom: 10px;
+  color:#333;
+  font-size:14px;
+}
+
+.dropdown-content a:hover{
+    font-size: 16px;
+  background:#9ccbec;
+}
+
+.dropdown.active .dropdown-content{
+  display:block;
+}
+
+.empty{
+  text-align:center;
+  margin-top:40px;
+  color:#777;
+}
+
+</style>
+<div class="site-wrapper">
+
+  <!-- ===== TOP TABS ===== -->
+  <div class="site-tabs">
+    <a href="{% url 'manage_all_site' %}" 
+       class="site-tab {% if active_tab == 'all' %}active{% endif %}">
+       All Sites (Click Three Dots to Manage Details and Orders)
+    </a>
+  </div>
+<div class="wrapper">
+
+  <!-- SEARCH -->
+  <form method="GET" class="search-bar">
+    <input type="text" name="q" placeholder="Search by Site Name / Status / Category"
+           value="{{ query|default:'' }}">
+    <button type="submit">Search</button>
+  </form>
+
+  <!-- SITE LIST -->
+  {% for site in sites %}
+
+  <div class="site-row">
+
+    <div class="site-left">
+      <div class="site-name">
+        {{ site.site_name }}
+      </div>
+
+      <div class="site-category">
+        {{ site.get_category_display }}
+      </div>
+
+      <div class="badge {{ site.status }}">
+        {{ site.get_status_display }}
+      </div>
+    </div> 
+
+    <div class="site-category">
+      <label>Created at:</label>
+        {{ site.created_at|date:"M d,Y" }}
+      </div>
+
+    <div class="dropdown">
+      <button class="menu-btn" onclick="toggleMenu(this)">⋮</button>
+
+      <div class="dropdown-content">
+        <a href="{% url 'site_details' site.id %}">View Details</a>
+        <a href="{% url 'manage_site_materials' site.id %}" >
+   
+   Buy & Manage Materials
+</a>
+
+      </div>
+    </div>
+
+  </div>
+
+  {% empty %}
+    <div class="empty">
+      No Sites Created Yet 🚧
+    </div>
+  {% endfor %}
+
+</div>
+</div>
+
+<script>
+function toggleMenu(btn){
+  const dropdown = btn.parentElement;
+  dropdown.classList.toggle("active");
+}
+
+window.onclick = function(e){
+  if(!e.target.matches('.menu-btn')){
+    document.querySelectorAll(".dropdown").forEach(d => {
+      d.classList.remove("active");
+    });
+  }
+}
+</script>
+
+{% endblock %}

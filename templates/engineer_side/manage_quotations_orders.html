@@ -1,0 +1,466 @@
+{% extends "engineer_side/engineer_dashboard.html" %}
+{% load static %}
+
+{% block content %}
+
+<style>
+
+/* ===== TOP MAIN TABS ===== */
+.top-tabs {
+    display: flex;
+    border-bottom: 2px solid #eee;
+    margin-bottom: 25px;
+}
+
+.top-tab {
+    padding: 12px 25px;
+    cursor: pointer;
+    font-weight: 600;
+    color: #555;
+    border-bottom: 3px solid transparent;
+    transition: 0.3s;
+}
+
+.top-tab.active {
+    color: #e65c00;
+    border-color: #e65c00;
+}
+
+/* ===== SUB TABS ===== */
+.sub-tabs {
+    display: flex;
+    margin-bottom: 20px;
+}
+
+.sub-tab {
+    padding: 8px 24px;
+    margin-right: 10px;
+    background: #f2f2f2;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: 0.3s;
+}
+
+.sub-tab.active {
+    background: #e65c00;
+    color: #fff;
+}
+
+/* ===== CONTENT BOX ===== */
+.content-box {
+    background: #fff;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+}
+
+/* ===== TABLE STYLE ===== */
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+}
+
+.data-table th,
+.data-table td {
+    padding: 12px;
+    border-bottom: 1px solid #eee;
+    text-align: left;
+}
+
+.data-table th {
+    background: #f8f9fa;
+}
+
+.status-badge {
+    padding: 5px 10px;
+    border-radius: 15px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.status-requested { background: #ffc107; color: #000; }
+.status-approved { background: #28a745; color: #fff; }
+.status-rejected { background: #dc3545; color: #fff; }
+.status-expired   {background: gray; color: #000;}
+.status-moved_for_order { background: blue; color: #fff;  }
+
+
+
+/* ===== MAIN TABS ===== */
+
+.material-tabs{
+  display:flex;
+  background:#ffffff;
+  border-radius:8px;
+  overflow:hidden;
+  box-shadow:0 4px 12px rgba(0,0,0,0.08);
+  margin-bottom:30px;
+}
+
+.material-tab{
+  flex:1;
+  text-align:center;
+  padding:14px 0;
+  text-decoration:none;
+  font-weight:600;
+  color:#0b1c2d;
+  border-right:1px solid #eee;
+  transition:0.3s;
+}
+
+.material-tab:last-child{
+  border-right:none;
+}
+
+.material-tab:hover:not(.active){
+  background:#0b1c2d;
+  color:#fff;
+}
+
+.material-tab.active{
+  background:#0b1c2d;
+  color:#fff;
+}
+
+.bill-btn {
+    padding: 8px 24px;
+    color: #ffffff !important;
+    text-decoration: none !important;
+    background-color: rgb(81, 81, 160);
+    display: inline-block;   /* important for button style */
+}
+
+
+/* ===== SITE INFO BAR ===== */
+.site-info-bar{
+  background:#fff;
+  padding:20px 25px;
+  border-radius:10px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  margin-bottom:20px;
+}
+
+.site-info-bar h2{
+  margin-bottom:15px;
+  color:#ff7a18;
+}
+
+.site-info-left{
+  display:flex;
+  flex-wrap:wrap;
+  gap:11%;
+}
+
+.site-info-item{
+  display:flex;
+  flex-direction:column;
+}
+
+.site-info-label{
+  font-size:16px;
+  font-weight:600;
+  margin-bottom: 6px;
+  color:#ff7a18;
+  text-transform:uppercase;
+}
+
+.site-info-value{
+  font-weight:600;
+  font-size: 22px;
+  color:#0b1c2d;
+}
+
+.site-status-badge{
+  padding:6px 14px;
+  border-radius:20px;
+  text-align: center;
+  font-size:13px;
+  font-weight:600;
+  color:#fff;
+}
+
+.Planning{ background:#6c757d; }
+.Started{ background:#007bff; }
+.Ongoing{ background:#ff9800; }
+.NearComplete{ background:#9c27b0; }
+.Completed{ background:#28a745; }
+.HandedOver{ background:#20c997; }
+
+.alert-success{
+  background:#e6ffed;
+  color:#0f5132;
+  padding:12px;
+  border-radius:8px;
+  margin-bottom:20px;
+}
+</style>
+
+<!-- ===== SITE INFO BAR ===== -->
+<div class="site-info-bar">
+  
+
+  <div class="site-info-left">
+
+    <h2>Site Details</h2>
+    <div class="site-info-item">
+      <div class="site-info-label">Site Name</div>
+      <div class="site-info-value">{{ site.site_name }}</div>
+    </div>
+
+    <div class="site-info-item">
+      <div class="site-info-label">Project Status</div>
+      <div class="site-status-badge {{ site.status }}">
+        {{ site.get_status_display }}
+      </div>
+    </div>
+
+    <div class="site-info-item">
+      <div class="site-info-label">Address</div>
+      <div class="site-info-value">{{ site.site_address }}</div>
+    </div>
+
+    <div class="site-info-item">
+      <div class="site-info-label">District</div>
+      <div class="site-info-value">{{ site.site_district }}</div>
+    </div>
+
+    <div class="site-info-item">
+      <div class="site-info-label">Pincode</div>
+      <div class="site-info-value">{{ site.site_pincode }}</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ===== PRODUCT CATEGORY TABS ===== -->
+<div class="material-tabs">
+
+  <a href="{% url 'search_products' site.id %}"
+     class="material-tab {% if active_tab == 'search' %}active{% endif %}">
+     Search Products
+  </a>
+
+  <a href="{% url 'view_cart' site.id %}"
+     class="material-tab {% if active_tab == 'cart' %}active{% endif %}">
+     Add to Cart
+  </a>
+
+  <a href="{% url 'manage_quotations_orders' site.id %}"
+     class="material-tab {% if active_tab == 'quotation' %}active{% endif %}">
+     Quotation & Order Requests
+  </a>
+
+  <a href="{% url 'confirmed_orders' site.id %}"
+     class="material-tab {% if active_tab == 'orders' %}active{% endif %}">
+     Confirmed Orders
+  </a>
+
+</div>
+<h2 style="color:#0b1c2d;"> Only Request and Response Section</h2><br>
+<!-- ===== TOP LEVEL TABS ===== -->
+<div class="top-tabs">
+    <div class="top-tab active" onclick="switchMainTab('quotation')">Quotations</div>
+</div>
+
+<!-- ===== QUOTATION SECTION ===== -->
+<div id="quotationSection">
+
+    <!-- SUB TABS -->
+    <div class="sub-tabs">
+        <div class="sub-tab active" onclick="switchSubTab('requests')">Engineer Quotation Requests</div>
+        <div class="sub-tab" onclick="switchSubTab('replies')">Agency Replies</div>
+    </div>
+
+    <!-- REQUESTS CONTENT -->
+    <div id="requestsContent" class="content-box">
+                 {% if messages %}
+    {% for message in messages %}
+      <div class="alert-success">
+        {{ message }}
+      </div>
+    {% endfor %}
+  {% endif %}
+        <h3> Engineer Quotation Requests</h3><br>
+            <h4 style="color: #28a745;"> In This Section You Can View The Quotation Request List</h4><br>
+            <h4 style="color: #28a745;"> Ordered quotation show as "moved-for-order" and Rejected quotation show as "Rejected"</h4>
+
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Site</th>
+                    <th>Agency</th>
+                    <th>Estimated Total Amount</th>
+                    <th>Delivery Preference</th>
+                    <th>Expected Delivery Date</th>
+                    <th>Estimate Bill</th>
+                    <th>Status</th>
+                    <th>Date</th>
+
+                </tr>
+            </thead> 
+                {% for quotation in quotations %}
+                <tr>
+                    <td>#{{ quotation.id }}</td>
+                    <td>{{ quotation.site.site_name }}</td>
+                    <td>{{ quotation.agency.company_name }}</td>
+                    <td>₹ {{ quotation.estimated_total }}</td>
+                    <td>{{ quotation.get_delivery_preference_display }}</td>
+                    <td>{{ quotation.expected_delivery_date|date:"d M Y" }}</td>
+                    
+                    <td><button ><a href="{% url 'view_quotation_invoice' quotation.id %}"
+                     class="bill-btn">
+                     View Bill
+                    </a></button>
+                    
+                    </td>
+
+                    <td>
+                        <span class="status-badge status-{{ quotation.status|lower }}">
+                            {{ quotation.status }}
+                        </span>
+                    </td>
+                    <td> {{ quotation.created_at|date:"d M Y" }}<br>
+    {{ quotation.created_at|time:"h:i A" }}</td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="6">No quotations found.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+    </div>
+
+    <!-- RECEIVED REPLIES CONTENT -->
+    <div id="repliesContent" class="content-box" style="display:none;">
+       {% if messages %}
+    {% for message in messages %}
+      <div class="alert-success">
+        {{ message }}
+      </div>
+    {% endfor %}
+  {% endif %}
+    <h3>Quotation Replies from Agency</h3><br>
+
+    <h3 style="color: #e65c00;">Important :</h3><br>
+    <h4 style="color: #28a745;"> If you Wnat to Order A product ,Click "View Final Bill" Button ,then you can see the place order button .</h4>
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Quotation ID</th>
+                <th>Site</th>
+                <th>Agency</th>
+                <th>Delivery Preference</th>
+                <th>Expected Delivery Date</th>                
+                <th>Status</th>
+                <th>Final Bill</th>
+                <th>Bill Generated Time</th>
+                <th>Valid time to place Order</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for quotation in replied_quotations %}
+            <tr>
+                <td>#{{ quotation.id }}</td>
+                <td>{{ quotation.site.site_name }}</td>
+                <td>{{ quotation.agency.company_name }}</td>
+                <td>{{ quotation.get_delivery_preference_display }}</td>
+                <td>{{ quotation.expected_delivery_date|date:"d M Y" }}</td>                
+
+                <td>
+                    <span class="status-badge status-{{ quotation.status|lower }}">
+                        {{ quotation.status }}
+                    </span>
+                </td>
+
+                <!-- FINAL BILL BUTTON -->
+                <td>
+{% if quotation.status != "Rejected" and quotation.final_estimate %}
+    <a href="{% url 'final_view_bill' quotation.id %}" class="bill-btn">
+        View Final Bill
+    </a>
+{% else %}
+    -
+{% endif %}
+</td>
+
+                <!-- BILL GENERATED TIME -->
+                <td>
+{% if quotation.final_estimate %}
+    {{ quotation.final_estimate.created_at|date:"d M Y, h:i A" }}
+{% else %}
+    -
+{% endif %}
+</td>
+                <td>
+{% if quotation.status == "Approved" %}
+    {{ quotation.quotation_valid_until|date:"d M Y, h:i A" }}
+{% elif quotation.status == "Expired" %}
+    <span style="color:red;font-weight:bold;">Time Out</span>
+{% else %}
+    -
+{% endif %}
+</td>
+
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="6">No replies from agency yet.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+</div>
+
+
+</div>
+
+
+<!-- ===== JAVASCRIPT ===== -->
+<script>
+
+function switchMainTab(type) {
+
+    const quotationSection = document.getElementById("quotationSection");
+    const ordersSection = document.getElementById("ordersSection");
+
+    const tabs = document.querySelectorAll(".top-tab");
+    tabs.forEach(tab => tab.classList.remove("active"));
+
+    if(type === "quotation"){
+        quotationSection.style.display = "block";
+        ordersSection.style.display = "none";
+        tabs[0].classList.add("active");
+    } else {
+        quotationSection.style.display = "none";
+        ordersSection.style.display = "block";
+        tabs[1].classList.add("active");
+    }
+}
+
+function switchSubTab(type) {
+
+    const requests = document.getElementById("requestsContent");
+    const replies = document.getElementById("repliesContent");
+
+    const subtabs = document.querySelectorAll(".sub-tab");
+    subtabs.forEach(tab => tab.classList.remove("active"));
+
+    if(type === "requests"){
+        requests.style.display = "block";
+        replies.style.display = "none";
+        subtabs[0].classList.add("active");
+    } else {
+        requests.style.display = "none";
+        replies.style.display = "block";
+        subtabs[1].classList.add("active");
+    }
+}
+
+</script>
+
+{% endblock %}

@@ -1,0 +1,492 @@
+{% extends "agency_side/agency_dashboard.html" %}
+{% load static %}
+{% block content %}
+
+<style>
+
+.quote-badge{
+  background:#ffc107;
+  padding:8px 16px;
+  display:inline-block;
+  font-weight:bold;
+  border-radius:20px;
+  margin-bottom:20px;
+}
+
+.invoice-container{
+  background:#fff;
+  padding:40px;
+  border-radius:10px;
+  box-shadow:0 4px 20px rgba(0,0,0,0.08);
+}
+
+.invoice-header{
+  display:flex;
+  justify-content:space-between;
+}
+
+.details-section{
+  display:flex;
+  justify-content:space-between;
+  margin:30px 0;
+}
+
+.invoice-table{
+  width:100%;
+  border-collapse:collapse;
+  margin-top:20px;
+}
+
+.invoice-table th,
+.invoice-table td{
+  border-bottom:1px solid #ddd;
+  padding:12px;
+  text-align:left;
+}
+
+.invoice-table th{
+  background:#f5f5f5;
+}
+
+.total-box{
+  text-align:right;
+  margin-top:20px;
+}
+
+.breakdown-box{
+  margin-top:15px;
+  background:#f8f9fa;
+  padding:15px;
+  border-radius:8px;
+}
+
+.line{
+  display:flex;
+  justify-content:space-between;
+  margin:6px 0;
+}
+
+.final-line{
+  font-size:18px;
+  font-weight:bold;
+  color:#0b1c2d;
+}
+
+/* ===== INPUT SECTION DESIGN ===== */
+
+.calc-wrapper{
+  background:#ffffff;
+  padding:25px;
+  border-radius:10px;
+  box-shadow:0 4px 15px rgba(0,0,0,0.06);
+  margin-bottom:30px;
+}
+
+.input-grid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:20px;
+}
+
+.input-grid label{
+  display:block;
+  font-weight:600;
+  margin-bottom:6px;
+}
+
+.input-grid input{
+  width:100%;
+  padding:10px;
+  border:1px solid #ccc;
+  border-radius:6px;
+}
+
+.preview-btn{
+  background:#034884;
+  color:white;
+  padding:10px 25px;
+  border:none;
+  border-radius:6px;
+  cursor:pointer;
+  margin-top:15px;
+  margin-right: 45%;
+}
+
+.preview-btn:hover{
+  background:#5a6268;
+}
+
+.send-section{
+  text-align:center;
+  margin-top:25px;
+}
+
+.send-btn{
+  background:#28a745;
+  color:white;
+  padding:10px 25px;
+  border:none;
+  border-radius:6px;
+  cursor:pointer;
+  font-weight:600;
+}
+
+.send-btn:hover{
+  background:#218838;
+}
+
+</style>
+
+<div class="quote-badge">Generate Final Bill</div>
+
+<div class="invoice-container">
+
+  <!-- HEADER -->
+  <div class="invoice-header">
+  <div>
+    <h2>Final Invoice</h2>
+  </div>
+
+  <div style="text-align:right;">
+    <a href="{% url 'manage_requested_replies' %}" 
+       style="background:#fa4604;
+              color:#fff;
+              padding:8px 18px;
+              border-radius:6px;
+              text-decoration:none;
+              font-weight:600;">
+      ← Back
+    </a><br><br>
+
+    <p style="margin-top:10px;"><strong>Request ID:</strong> #{{ quotation.id }}</p>
+    <p><strong>Date:</strong> {{ quotation.created_at|date:"d M Y, h:i A" }}</p>
+  </div>
+</div>
+
+
+  <hr>
+
+  <hr><br>
+  <div class="delivery_det">
+    <h4>Delivery Prefferd :       {{ quotation.get_delivery_preference_display }}</h4>  
+    <h4> Delivery Expected Date : {{ quotation.expected_delivery_date|date:"d M Y" }}</h4>  </div>
+  <!-- BILL DETAILS -->
+  <div class="details-section">
+
+    <div>
+      <h4>Engineer Details</h4>
+      <p>Name :{{ quotation.engineer.engineer_profile.full_name }}</p>
+      <p>phone_no :{{ quotation.engineer.engineer_profile.phone_number }}</p>
+      <p>Address :{{ quotation.site.site_address }}</p>
+      <p>{{ quotation.site.site_district }} - {{ quotation.site.site_pincode }}</p>
+    </div>
+
+    <div>
+      <h4>Agency Details</h4>
+      <p>Agency Name: {{ quotation.agency.company_name }}</p>
+      <p>Addresss :{{ quotation.agency.company_address }}</p>
+      <p>{{ quotation.agency.company_district }} - {{ quotation.agency.company_pincode }}</p>
+    </div>
+
+  </div>
+
+  <table class="invoice-table main-bill-table">
+    <thead>
+      <tr>
+        <th>Product</th>
+        <th>Qty</th>
+        <th>Price</th>
+        <th>Total</th>
+      </tr>
+    </thead>
+
+    <tbody>
+{% for item in quotation.items.all %}
+<tr>
+  <td>{{ item.product_name }}</td>
+  <td>{{ item.quantity }}</td>
+
+  <td>
+    ₹ <input type="number" 
+             step="0.01"
+             name="edited_price_{{ item.id }}"
+             value="{{ item.price }}"
+             class="edit-price"
+             style="width:100px;">
+  </td>
+
+  <td>
+    ₹ <span class="row-total"
+             data-qty="{{ item.quantity }}">
+        {{ item.total_price }}
+      </span>
+  </td>
+</tr>
+{% endfor %}
+</tbody>
+
+  </table>
+
+  <div class="total-box">
+    <h3>Total Cost: ₹ {{ quotation.estimated_total }}</h3>
+
+    <div id="breakdown" class="breakdown-box" style="display:none;">
+
+      <div class="line">
+        <span>SGST</span>
+        <span>₹ <span id="sgst_amt">0.00</span></span>
+      </div>
+
+      <div class="line">
+        <span>CGST</span>
+        <span>₹ <span id="cgst_amt">0.00</span></span>
+      </div>
+
+      <div class="line">
+        <span>Platform Fee</span>
+        <span>₹ <span id="platform_amt">0.00</span></span>
+      </div>
+
+      <div class="line">
+        <span>Transport</span>
+        <span>₹ <span id="transport_amt">0.00</span></span>
+      </div>
+
+      <hr>
+
+      <div class="line final-line">
+        <span>Final Total</span>
+        <span>₹ <span id="final_total">0.00</span></span>
+      </div>
+
+    </div>
+  </div><br><br>
+  
+  <!-- INPUT SECTION ABOVE BILL -->
+  <div class="calc-wrapper">
+    <h2> Edit Area</h2><br>
+    <h4> * Enter Charges to Generate Final Bill</h4>
+
+    
+<!-- ================= PRODUCT TABLE ================= -->
+<table class="invoice-table">
+<thead>
+<tr>
+<th>Product</th>
+<th>Qty</th>
+<th>Price</th>
+</tr>
+</thead>
+
+<tbody>
+{% for item in quotation.items.all %}
+<tr>
+<td>{{ item.product_name }}</td>
+<td>{{ item.quantity }}</td>
+<td>
+₹ <input type="number"
+         name="edited_price_{{ item.id }}"
+         value="{{ item.price }}"
+         class="edit-price"
+         disabled>
+</td>
+
+</tr>
+{% endfor %}
+</tbody>
+</table>
+
+  <div style="margin-top:25px; text-align:right;">
+   
+    <h4 style="text-align:center; font-weight: 600;"><b>Disclaimer:</b> If You Have Any Changes On Today price (On Market Standard) Click The Edit Button (use it wisely). otherwise  </h4><br>
+     <h4 style="text-align:center; color: #08621f; font-weight: 600;" > just click Edit price button and save changes button to Hold the Exact price.</h4><br>
+  <button type="button" 
+          id="editBtn"
+          style="background:#ffc107; border:none; padding:8px 16px; border-radius:6px; font-weight:600; margin-right: 15px;">
+    Edit Price
+  </button>
+
+  <button type="button" 
+          id="saveBtn"
+          style="background:#17a2b8; border:none; padding:8px 20px; border-radius:6px; font-weight:600; color:white;"
+          disabled>
+    Save Changes
+  </button><br><br>
+
+    <div class="input-grid">
+      <div>
+        <label>SGST (%)</label>
+        <input type="number" step="0.01" id="sgst_percent">
+      </div>
+
+      <div>
+        <label>CGST (%)</label>
+        <input type="number" step="0.01" id="cgst_percent">
+      </div>
+
+      <div>
+        <label>Platform Fee (%)</label>
+        <input type="number" step="0.01" id="platform_percent">
+      </div>
+
+      <div>
+        <label>Transport Cost (₹)</label>
+        <input type="number" step="0.01" id="transport">
+      </div>
+    </div><br>
+<h4 style="color: #08621f; font-weight: 600; text-align:center;"> Click the Generate Preview button to view the Final bill then Click the "send to Engineer" Button otherwise "send to engineer" button not work</h4>
+    <button type="button" class="preview-btn" onclick="calculateFinal()">
+      Generate Preview
+    </button>
+  </div>
+</div>
+   
+<form method="POST">
+  <!-- SEND BUTTON BELOW BILL -->
+  <div class="send-section">
+ 
+      {% csrf_token %}
+      {% for item in quotation.items.all %}
+      <input type="hidden"
+name="final_price_{{ item.id }}"
+id="hidden_price_{{ item.id }}"value="{{ item.price }}">
+{% endfor %}
+
+      <input type="hidden" name="sgst_percent" id="sgst_hidden">
+      <input type="hidden" name="cgst_percent" id="cgst_hidden">
+      <input type="hidden" name="platform_fee_percent" id="platform_hidden">
+      <input type="hidden" name="transport_charge" id="transport_hidden">
+      <h5 style="color: #14822e; font-size: medium; margin-left: 15px; margin-top: 10px ;"> After Clicking the "Send To Emgineer" Button ,Wait for a while ,it Will Send you a Mail </h5><br>
+      <button type="submit" class="send-btn" id="sendBtn" disabled>
+      Send to Engineer
+      </button><br>
+          
+  </div></form>
+
+</div>
+
+
+<script>
+
+let isSaved = false;
+let isPreviewed = false;
+
+// ================= EDIT BUTTON =================
+document.getElementById("editBtn").addEventListener("click", function(){
+
+    // Enable only bottom editable price inputs
+    document.querySelectorAll(".calc-wrapper .edit-price").forEach(function(input){
+        input.disabled = false;
+    });
+
+    document.getElementById("saveBtn").disabled = false;
+});
+
+
+// ================= SAVE BUTTON =================
+document.getElementById("saveBtn").addEventListener("click", function(){
+
+    let baseTotal = 0;
+
+    // Loop bottom editable table
+    document.querySelectorAll(".calc-wrapper .edit-price").forEach(function(input){
+
+        input.disabled = true;
+
+        let id = input.name.split("_")[2];
+        let newPrice = parseFloat(input.value) || 0;
+
+        // Update hidden input
+        let hidden = document.getElementById("hidden_price_" + id);
+        if(hidden){
+            hidden.value = newPrice;
+        }
+
+        // ===== Update TOP MAIN BILL TABLE =====
+        let topRow = document.querySelector(
+            ".main-bill-table input[name='edited_price_" + id + "']"
+        ).closest("tr");
+
+        let qty = parseFloat(topRow.children[1].innerText);
+        let newRowTotal = newPrice * qty;
+
+        // Update price column
+        topRow.children[2].innerHTML =
+            '₹ <input type="number" value="' + newPrice.toFixed(2) + '" disabled>';
+
+        // Update total column
+        topRow.children[3].innerText = "₹ " + newRowTotal.toFixed(2);
+
+        baseTotal += newRowTotal;
+    });
+
+    // Update Total Cost (top summary)
+    document.querySelector(".total-box h3").innerText =
+        "Total Cost: ₹ " + baseTotal.toFixed(2);
+
+    isSaved = true;
+});
+
+
+// ================= GENERATE PREVIEW =================
+function calculateFinal(){
+
+    if(!isSaved){
+        alert("Please Save Price Changes First");
+        return;
+    }
+
+    let baseTotal = 0;
+
+    // Calculate again from top table (final locked values)
+    document.querySelectorAll(".main-bill-table tbody tr").forEach(function(row){
+
+        let priceInput = row.querySelector("input");
+        let price = parseFloat(priceInput.value) || 0;
+        let qty = parseFloat(row.children[1].innerText);
+
+        let rowTotal = price * qty;
+
+        row.children[3].innerText = "₹ " + rowTotal.toFixed(2);
+
+        baseTotal += rowTotal;
+    });
+
+    let sgstPercent = parseFloat(document.getElementById("sgst_percent").value) || 0;
+    let cgstPercent = parseFloat(document.getElementById("cgst_percent").value) || 0;
+    let platformPercent = parseFloat(document.getElementById("platform_percent").value) || 0;
+    let transport = parseFloat(document.getElementById("transport").value) || 0;
+
+    let sgstAmount = (baseTotal * sgstPercent) / 100;
+    let cgstAmount = (baseTotal * cgstPercent) / 100;
+    let platformAmount = (baseTotal * platformPercent) / 100;
+
+    let finalTotal = baseTotal + sgstAmount + cgstAmount + platformAmount + transport;
+
+    document.getElementById("sgst_amt").innerText = sgstAmount.toFixed(2);
+    document.getElementById("cgst_amt").innerText = cgstAmount.toFixed(2);
+    document.getElementById("platform_amt").innerText = platformAmount.toFixed(2);
+    document.getElementById("transport_amt").innerText = transport.toFixed(2);
+    document.getElementById("final_total").innerText = finalTotal.toFixed(2);
+
+    document.getElementById("breakdown").style.display = "block";
+
+    // Hidden values for POST
+    document.getElementById("sgst_hidden").value = sgstPercent;
+    document.getElementById("cgst_hidden").value = cgstPercent;
+    document.getElementById("platform_hidden").value = platformPercent;
+    document.getElementById("transport_hidden").value = transport;
+
+    isPreviewed = true;
+
+    if(isSaved && isPreviewed){
+        document.getElementById("sendBtn").disabled = false;
+    }
+}
+
+
+
+</script>
+
+
+{% endblock %}

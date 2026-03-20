@@ -1,0 +1,311 @@
+{% extends "agency_side/agency_dashboard.html" %}
+{% load static %}
+
+{% block content %}
+
+<style>
+
+/* ===== PAGE TITLE ===== */
+.page-title{
+    font-size:24px;
+    font-weight:700;
+    margin-bottom:25px;
+    color:#0b1c2d;
+}
+
+/* ===== TOP SWITCH TABS ===== */
+.top-tabs{
+    display:flex;
+    background:#fff;
+    border-radius:8px;
+    overflow:hidden;
+    box-shadow:0 4px 15px rgba(0,0,0,0.06);
+    margin-bottom:30px;
+}
+
+.top-tab{
+    flex:1;
+    text-align:center;
+    padding:14px;
+    cursor:pointer;
+    font-weight:600;
+    transition:0.3s;
+    border-right:1px solid #eee;
+}
+
+.top-tab:last-child{
+    border-right:none;
+}
+
+.top-tab.active{
+    background:#0b1c2d;
+    color:#fff;
+}
+
+.top-tab:hover:not(.active){
+    background:#f4f6f9;
+}
+
+/* ===== CONTENT BOX ===== */
+.content-box{
+    background:#fff;
+    padding:30px;
+    border-radius:10px;
+    box-shadow:0 6px 20px rgba(0,0,0,0.08);
+}
+
+/* ===== TABLE STYLE ===== */
+.data-table{
+    width:100%;
+    border-collapse:collapse;
+    margin-top:15px;
+}
+
+.data-table th,
+.data-table td{
+    padding:16px;
+    border-bottom:1px solid #eee;
+    text-align:left;
+}
+
+.data-table th{
+    background:#f8f9fa;
+    font-weight:600;
+}
+
+/* ===== STATUS BADGE ===== */
+.status-badge{
+    padding:6px 14px;
+    border-radius:20px;
+    font-size:12px;
+    font-weight:600;
+    color:#fff;
+    display:inline-block;
+    min-width:90px;
+    text-align:center;
+}
+
+/* GREEN */
+.status-approved{
+    background:#28a745;
+}
+
+/* RED */
+.status-cancelled,
+.status-rejected{
+    background:#dc3545;
+}
+
+/* YELLOW */
+.status-requested{
+    background:#ffc107;
+    color:#000;
+}
+
+
+/* ===== ACTION BUTTON ===== */
+.action-btn{
+    padding:6px 12px;
+    border-radius:6px;
+    font-size:13px;
+    text-decoration:none;
+    background:#0b1c2d;
+    color:#fff;
+    transition:0.3s;
+}
+
+.action-btn:hover{
+    background:#ff7a18;
+}
+
+</style>
+
+<h2 class="page-title">Quotation Management</h2>
+
+<!-- ===== TOP TABS ===== -->
+<div class="top-tabs">
+    <div class="top-tab active" onclick="switchTab('requests')">
+         Quotation Requests From Engineers
+    </div>
+
+    <div class="top-tab" onclick="switchTab('replies')">
+       Our Quotation Replies
+    </div>
+</div>
+
+<!-- ===== REQUESTS SECTION ===== -->
+<div id="requestsSection" class="content-box">
+
+    <h3>Incoming Quotation Requests</h3><br>
+    <h2 style="color: #ff7a18;">Important :</h2><br>
+    <h5 style="color: #0b7023; font-size: medium; margin-left: 15px;"> * Consider the every Details in this table , After decide to "approve or reject" the quotation received from engineer. </h5><br>
+    <h5 style="color: #0b7023; font-size: medium; margin-left: 15px;"> * click drop down and select the approve or reject ,you have only one chance to reply using this submit ,use it wisely.</h5><br>
+    <h5 style="color: #0b7023; font-size: medium; margin-left: 15px;"> * After Clicking the Notify Submit button wait for a while ,the "Status" will upadte then use "generate bill" button to send to engineer. </h5><br>
+        <h5 style="color: #810797; font-size: medium; margin-left: 5px;"> Prefer Old Quotation Give Your First Priority..</h5>
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Engineer Name</th>
+                <th>Site</th>
+                <th>Total Estimate</th>
+                <th>Requested Date</th>
+                <th>Request Bill</th>
+                <th>Delivery_preffered </th>
+                <th>Delivery Expected Date</th>
+                <th>Status</th>
+                <th>Notify</th>
+                <th>Generate Final Bill</th><th>Fill Bill Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for quotation in incoming_requests %}
+            <tr>
+                <td>#{{ quotation.id }}</td>
+                <td>{{ quotation.engineer.username }}</td>
+                <td>{{ quotation.site.site_name }}</td>
+                <td>₹ {{ quotation.estimated_total }}</td>
+                
+                <td>
+    {{ quotation.created_at|date:"d M Y" }}<br>
+    {{ quotation.created_at|time:"h:i A" }}
+</td>
+
+                <td>
+                <a href="{% url 'products_quotation_page' quotation.id %}"
+                class="action-btn">
+                 View Bill
+                 </a>
+                </td>
+                <td>{{ quotation.get_delivery_preference_display }}</td>
+                <td>{{ quotation.expected_delivery_date|date:"d M Y" }}</td>
+                <td>
+                    <span class="status-badge status-{{ quotation.status|lower }}"> 
+                        {{ quotation.status }}
+                    </span>
+                </td>
+                 <td>
+               {% if quotation.status == "Requested" %}
+              <form method="POST" action="{% url 'update_quotation_status' quotation.id %}">
+              {% csrf_token %}
+            <select name="status" required>
+            <option value="">Select</option>
+            <option value="Approved">Approved</option>
+            <option value="Rejected">Rejected</option>
+           </select>
+            <button type="submit" class="action-btn">Submit</button>
+           </form>
+            {% else %}
+             -
+            {% endif %}
+            </td>
+            <td>
+    {% if not quotation.final_estimate %}
+        <a href="{% url 'generate_final_bill' quotation.id %}" 
+           class="action-btn">
+           Generate
+        </a>
+    {% else %}
+        -
+    {% endif %}
+</td>
+
+<td>
+    {% if quotation.final_estimate and quotation.final_estimate.bill_posted %}
+        <span class="status-badge status-replied">Posted</span>
+    {% else %}
+        Pending
+    {% endif %}
+</td>
+
+            </tr>
+            {% empty %}
+            <tr><td colspan="7">No quotation requests found.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+</div>
+
+<!-- ===== REPLIES SECTION ===== -->
+<div id="repliesSection" class="content-box" style="display:none;">
+
+    <h3>Our Replied Quotations</h3>
+
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Engineer</th>
+                <th>Site</th>
+                <th>Delivery_preffered</th>
+                <th>Delivery Expected Date</th>                
+                <th>our estimate bill</th>
+                <th>Status</th>
+                <th>Quotation Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for quotation in replied_requests %}
+            <tr>
+    <td>#{{ quotation.id }}</td>
+    <td>{{ quotation.engineer.username }}</td>
+    <td>{{ quotation.site.site_name }}</td>
+                    <td>{{ quotation.get_delivery_preference_display }}</td>
+                <td>{{ quotation.expected_delivery_date|date:"d M Y" }}</td>
+
+    <td>
+        {% if quotation.final_estimate %}
+            <a href="{% url 'agency_show_final_bill' quotation.id %}"
+   class="action-btn">
+   View Final Bill
+</a>
+
+        {% else %}
+            -
+        {% endif %}
+    </td>
+
+    <td>
+        <span class="status-badge status-{{ quotation.status|lower }}">
+            {{ quotation.status }}
+        </span>
+    </td>
+
+    <td>{{ quotation.created_at|date:"d M Y" }}</td>
+</tr>
+
+            {% empty %}
+            <tr><td colspan="6">No replies yet.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+</div>
+
+<!-- ===== JS ===== -->
+<script>
+
+function switchTab(type){
+
+    const requests = document.getElementById("requestsSection");
+    const replies = document.getElementById("repliesSection");
+
+    const tabs = document.querySelectorAll(".top-tab");
+    tabs.forEach(tab => tab.classList.remove("active"));
+
+    if(type === "requests"){
+        requests.style.display = "block";
+        replies.style.display = "none";
+        tabs[0].classList.add("active");
+    } else {
+        requests.style.display = "none";
+        replies.style.display = "block";
+        tabs[1].classList.add("active");
+    }
+}
+
+</script>
+
+{% endblock %}
+

@@ -1,0 +1,348 @@
+{% extends "engineer_side/engineer_dashboard.html" %}
+{% block content %}
+
+<style>
+
+.page-title{
+    font-size:22px;
+    font-weight:700;
+    margin-bottom:25px;
+    color:#0b1c2d;
+}
+
+/* ===== TABLE ===== */
+.order-table{
+    width:100%;
+    border-collapse:collapse;
+    background:#fff;
+    border-radius:10px;
+    overflow:hidden;
+    box-shadow:0 6px 20px rgba(0,0,0,0.08);
+}
+
+.order-table th{
+    background:#0b1c2d;
+    color:#fff;
+    padding:14px;
+    text-align:left;
+    font-size:14px;
+}
+
+.order-table td{
+    padding:14px;
+    border-bottom:1px solid #eee;
+    font-size:14px;
+}
+
+.order-table tr:hover{
+    background:#f9f9f9;
+}
+
+/* ===== STATUS BADGES ===== */
+
+.badge{
+    padding:6px 12px;
+    border-radius:20px;
+    font-size:12px;
+    font-weight:600;
+    color:#fff;
+}
+
+.Placed{ background:#6c757d; }
+.AgencyApproved{ background:#28a745; }
+.AgencyRejected{ background:#dc3545; }
+.Processing{ background:#17a2b8; }
+.OutForDelivery{ background:#ff9800; }
+.Delivered{ background:#4caf50; }
+.Cancelled{ background:#f44336; }
+
+/* ===== PAYMENT ===== */
+.payment-badge{
+    background:#673ab7;
+    color:#fff;
+    padding:5px 10px;
+    border-radius:15px;
+    font-size:12px;
+}
+
+/* ===== NOTIFY BUTTON ===== */
+.notify-btn{
+    padding:6px 14px;
+    border:none;
+    border-radius:6px;
+    font-size:12px;
+    cursor:pointer;
+    font-weight:600;
+}
+
+.notify-yes{
+    background:#28a745;
+    color:#fff;
+}
+
+.notify-no{
+    background:#dc3545;
+    color:#fff;
+}
+
+
+/* ===== MAIN TABS ===== */
+
+.material-tabs{
+  display:flex;
+  background:#ffffff;
+  border-radius:8px;
+  overflow:hidden;
+  box-shadow:0 4px 12px rgba(0,0,0,0.08);
+  margin-bottom:30px;
+}
+
+.material-tab{
+  flex:1;
+  text-align:center;
+  padding:14px 0;
+  text-decoration:none;
+  font-weight:600;
+  color:#0b1c2d;
+  border-right:1px solid #eee;
+  transition:0.3s;
+}
+
+.material-tab:last-child{
+  border-right:none;
+}
+
+.material-tab:hover:not(.active){
+  background:#0b1c2d;
+  color:#fff;
+}
+
+.material-tab.active{
+  background:#0b1c2d;
+  color:#fff;
+}
+
+.bill-btn{
+    padding:6px 14px;
+    background:#2506f0;
+    color:#fff;
+    border-radius:6px;
+    text-decoration:none;
+    font-size:12px;
+    font-weight:600;
+}
+
+.bill-btn:hover{
+    background:#1f3c88;
+}
+
+
+/* ===== SITE INFO BAR ===== */
+.site-info-bar{
+  background:#fff;
+  padding:20px 25px;
+  border-radius:10px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  margin-bottom:20px;
+}
+
+.site-info-bar h2{
+  margin-bottom:15px;
+  color:#ff7a18;
+}
+
+.site-info-left{
+  display:flex;
+  flex-wrap:wrap;
+  gap:11%;
+}
+
+.site-info-item{
+  display:flex;
+  flex-direction:column;
+}
+
+.site-info-label{
+  font-size:16px;
+  font-weight:600;
+  margin-bottom: 6px;
+  color:#ff7a18;
+  text-transform:uppercase;
+}
+
+.site-info-value{
+  font-weight:600;
+  font-size: 22px;
+  color:#0b1c2d;
+}
+
+.site-status-badge{
+  padding:6px 14px;
+  border-radius:20px;
+  text-align: center;
+  font-size:13px;
+  font-weight:600;
+  color:#fff;
+}
+
+.Planning{ background:#6c757d; }
+.Started{ background:#007bff; }
+.Ongoing{ background:#e18d0f; }
+.NearComplete{ background:#9c27b0; }
+.Completed{ background:#28a745; }
+.HandedOver{ background:#20c997; }
+
+.alert-success{
+  background:#e6ffed;
+  color:#0f5132;
+  padding:12px;
+  border-radius:8px;
+  margin-bottom:20px;
+}
+</style>
+
+</style>
+
+<div class="site-info-bar">
+  
+
+  <div class="site-info-left">
+
+    <h2>Site Details</h2>
+    <div class="site-info-item">
+      <div class="site-info-label">Site Name</div>
+      <div class="site-info-value">{{ site.site_name }}</div>
+    </div>
+
+    <div class="site-info-item">
+      <div class="site-info-label">Project Status</div>
+      <div class="site-status-badge {{ site.status }}">
+        {{ site.get_status_display }}
+      </div>
+    </div>
+
+    <div class="site-info-item">
+      <div class="site-info-label">Address</div>
+      <div class="site-info-value">{{ site.site_address }}</div>
+    </div>
+
+    <div class="site-info-item">
+      <div class="site-info-label">District</div>
+      <div class="site-info-value">{{ site.site_district }}</div>
+    </div>
+
+    <div class="site-info-item">
+      <div class="site-info-label">Pincode</div>
+      <div class="site-info-value">{{ site.site_pincode }}</div>
+    </div>
+
+  </div>
+</div>
+<div class="material-tabs">
+
+  <a href="{% url 'search_products' site.id %}"
+     class="material-tab {% if active_tab == 'search' %}active{% endif %}">
+     Search Products
+  </a>
+
+  <a href="{% url 'view_cart' site.id %}"
+     class="material-tab {% if active_tab == 'cart' %}active{% endif %}">
+     Add to Cart
+  </a>
+
+  <a href="{% url 'manage_quotations_orders' site.id %}"
+     class="material-tab {% if active_tab == 'quotation' %}active{% endif %}">
+     Quotation & Order Requests
+  </a>
+
+  <a href="{% url 'confirmed_orders' site.id %}"
+     class="material-tab {% if active_tab == 'orders' %}active{% endif %}">
+     Confirmed Orders
+  </a>
+
+</div>
+
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert-success">
+            {{ message }}
+        </div>
+    {% endfor %}
+{% endif %}
+
+<div class="page-title">
+Confirmed Orders - {{ site.site_name }}
+</div>
+
+<table class="order-table">
+
+    <thead>
+        <tr>
+            <th>Order ID</th>
+            <th>Site</th>
+            <th>Final Bill</th>
+            <th>Ordered Date & Time</th>
+            <th>Final Order Bill</th>
+            <th> Agency Status</th>
+            <th>Payment</th>
+            <th>Delivery Date & Time</th>
+
+        </tr>
+    </thead>
+
+    <tbody>
+        {% for order in orders %}
+        <tr>
+
+            <td>#{{ order.id }}</td>
+
+            <td>{{ order.quotation.site.site_name }}</td>
+
+            <td>₹ {{ order.total_amount }}</td>
+
+            <td>
+                {{ order.created_at|date:"d M Y" }}<br>
+                {{ order.created_at|time:"h:i A" }}
+            </td>
+            <td>
+    <a href="{% url 'eng_order_bill' order.id %}"
+       class="bill-btn">
+       View Bill
+    </a>
+</td>
+
+            <td>
+                <span class="badge {{ order.order_status }}">
+                    {{ order.get_order_status_display }}
+                </span>
+            </td>
+
+            <td>
+                <span class="payment-badge">
+                    {{ order.get_payment_method_display }}
+                </span>
+            </td>
+
+            <td>
+                {% if order.delivery %}
+                    {{ order.delivery.delivery_date|date:"d M Y" }}<br>
+                    {{ order.delivery.delivery_time|time:"h:i A" }}
+                {% else %}
+                    -
+                {% endif %}
+            </td>
+
+
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="8" style="text-align:center;">
+                No Confirmed Orders Found.
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+
+</table>
+
+{% endblock %}
