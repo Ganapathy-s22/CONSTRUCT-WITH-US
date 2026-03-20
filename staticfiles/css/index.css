@@ -1,0 +1,166 @@
+/* ===== GLOBAL RESET ===== */
+body{
+  margin: 0;
+  padding: 0;
+  font: normal 500 24px "Oswald", sans-serif;
+  background: #f5f7fa;
+  overflow-x: hidden;
+}
+
+/* ===== HERO ===== */
+.hero-section {
+  background: linear-gradient(135deg, #0b1c2d, #163c61);
+  padding: 100px 80px;
+  text-align: center;
+  animation: fadeInHero 1.2s ease-in-out;
+}
+
+.hero-section h1{
+  color: #ff7a18;
+  font-size: 42px;
+  animation: slideUp 1s ease forwards;
+}
+
+.hero-section p{
+  color: #fff;
+  font-size: 18px;
+  margin-top: 15px;
+  opacity: 0;
+  animation: fadeText 1.5s ease forwards;
+  animation-delay: .5s;
+}
+
+p{
+  font-size: 22px;
+}
+/* ===== HEADINGS ===== */
+h2 {
+  color: #ff7a18;
+  font: normal 700 26px "Oswald", sans-serif;
+  margin-bottom: 20px;
+}
+
+/* ===== SECTIONS ===== */
+section {
+  padding: 60px 80px;
+  background-color: #ffffff;
+  animation: fadeInSection 1s ease;
+}
+
+/* ===== GRIDS ===== */
+.services-grid,
+.flow-grid,
+.signup-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 30px;
+}
+
+/* ===== CARDS ===== */
+.service-card,
+.signup-card,
+.road {
+  background: #dde7f5;
+  padding: 35px;
+  font: normal 400 20px "Oswald", sans-serif;
+  text-align: center;
+  border-radius: 10px;
+  transition: all 0.3s ease;
+  transform: translateY(0);
+  box-shadow: 0 8px 18px rgba(0,0,0,0.05);
+}
+
+/* Hover Lift Effect */
+.service-card:hover,
+.signup-card:hover,
+.road:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 12px 25px rgba(0,0,0,0.15);
+}
+
+/* ===== SIGNUP CARD EXTRA ===== */
+.signup-card h3 {
+  font: normal 600 22px "Oswald", sans-serif;
+  margin-bottom: 10px;
+}
+
+/* ===== BUTTON GROUP ===== */
+.action-btns {
+  margin-top: 25px;
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+}
+
+/* ===== COMMON BUTTON ===== */
+.btn {
+  padding: 12px 24px;
+  font: normal 500 18px "Oswald", sans-serif;
+  text-decoration: none;
+  border-radius: 6px;
+  color: #fff;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Glow Effect */
+.btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 12px rgba(255,122,24,0.5);
+}
+
+/* SIGNUP BUTTON */
+.signup-btn {
+  background: #ff7a18;
+}
+
+.signup-btn:hover {
+  background: #e66a0f;
+}
+
+/* LOGIN BUTTON */
+.login-btn {
+  background: #0b1c2d;
+}
+
+.login-btn:hover {
+  background: #102a44;
+}
+
+.signup-card p {
+  font-size: 14px;
+}
+
+/* ===== ANIMATIONS ===== */
+
+@keyframes fadeInHero {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(40px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes fadeText {
+  to { opacity: 1; }
+}
+
+@keyframes fadeInSection {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
