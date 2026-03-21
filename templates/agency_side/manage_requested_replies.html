@@ -4,6 +4,9 @@
 {% block content %}
 
 <style>
+    .content-box {
+  overflow: visible; /* layout break prevent */
+}
 
 /* ===== PAGE TITLE ===== */
 .page-title{
@@ -51,6 +54,7 @@
     background:#fff;
     padding:30px;
     border-radius:10px;
+    width: fit-content;
     box-shadow:0 6px 20px rgba(0,0,0,0.08);
 }
 
@@ -118,6 +122,34 @@
     background:#ff7a18;
 }
 
+/* ===== RESPONSIVE TABLE FIX ===== */
+.table-wrapper {
+  width: 100%;
+  overflow-x: auto;   /* 🔥 scroll only inside table */
+}
+
+/* prevent breaking */
+.data-table {
+  min-width: 900px; /* table shrink aagathu */
+}
+
+/* optional smooth scroll */
+.table-wrapper::-webkit-scrollbar {
+  height: 6px;
+}
+
+@media (max-width: 768px) {
+  .content-box {
+    padding: 15px;
+  }
+
+  .data-table th,
+  .data-table td {
+    padding: 10px;
+    font-size: 12px;
+  }
+}
+
 </style>
 
 <h2 class="page-title">Quotation Management</h2>
@@ -133,7 +165,7 @@
     </div>
 </div>
 
-<!-- ===== REQUESTS SECTION ===== -->
+<!-- ===== REQUESTS SECTION ===== --><div class="table-wrapper">
 <div id="requestsSection" class="content-box">
 
     <h3>Incoming Quotation Requests</h3><br>
@@ -223,11 +255,12 @@
             <tr><td colspan="7">No quotation requests found.</td></tr>
             {% endfor %}
         </tbody>
-    </table>
+    </table></div>
 
 </div>
 
 <!-- ===== REPLIES SECTION ===== -->
+ <div class="table-wrapper">
 <div id="repliesSection" class="content-box" style="display:none;">
 
     <h3>Our Replied Quotations</h3>
@@ -279,7 +312,7 @@
             <tr><td colspan="6">No replies yet.</td></tr>
             {% endfor %}
         </tbody>
-    </table>
+    </table></div>
 
 </div>
 
