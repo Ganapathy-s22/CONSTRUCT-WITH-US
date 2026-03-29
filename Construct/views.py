@@ -2800,7 +2800,7 @@ Price : ₹{item.price}
             send_mail(
                 f"Order #{order.id} {status_text} by Agency",
                 f"""
-Hello {order.engineer.engineer_profile.full_name},
+Hello Engineer : {order.engineer.engineer_profile.full_name},
 
 Your order has been reviewed by the agency.
 
@@ -2837,7 +2837,7 @@ ConstructWithUs Team
             send_mail(
                 f"Order #{order.id} Status Updated ({status_text})",
                 f"""
-Hello {order.agency.company_name},
+Hello  Agency : {order.agency.company_name},
 
 Order status has been updated successfully.
 
